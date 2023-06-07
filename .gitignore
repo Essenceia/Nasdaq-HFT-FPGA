@@ -1,4 +1,5 @@
 *
+!Makefile
 !doc
 !doc/**
 !itch
@@ -8,4 +9,5 @@
 !*.v
 !.gitignore
 !.gitattribute
+!.gitmodules
 !tv
