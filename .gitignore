@@ -1,0 +1,11 @@
+*
+!doc
+!doc/**
+!itch
+!moldudp64
+!verilog-ethernet
+!*.md
+!*.v
+!.gitignore
+!.gitattribute
+!tv

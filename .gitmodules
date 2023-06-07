@@ -1,0 +1,9 @@
+[submodule "moldudp64"]
+	path = moldudp64
+	url = https://github.com/Essenceia/MoldUPD64
+[submodule "itch"]
+	path = itch
+	url = https://github.com/Essenceia/ITCH
+[submodule "verilog-ethernet"]
+	path = verilog-ethernet
+	url = https://github.com/alexforencich/verilog-ethernet
