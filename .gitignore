@@ -2,6 +2,7 @@
 !Makefile
 !doc
 !doc/**
+!tb
 !itch
 !moldudp64
 !verilog-ethernet

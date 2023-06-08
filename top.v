@@ -6,7 +6,7 @@
  * This code is provided "as is" without any express or implied warranties. */ 
 
 // Top level of our high frequency trader
-module hft(
+module hft #(
 	parameter AXI_DATA_W  = 64,
 	parameter AXI_KEEP_W  = 8,
 	parameter SID_W       = 80,
@@ -18,10 +18,10 @@ module hft(
 	parameter LEN       = 8,
 	parameter MSG_MAX_W = 50*LEN,// maximum length an itch message ( net order imbalance ) 
 	parameter CNT_MAX   = 7,// $ceil(MSG_MAX_W / AXI_DATA_W) // maxium number of payloads that need to be received for the longest itch message 
-	parameter CNT_MAX_W = $clog2(CNT_MAX))
+	parameter CNT_MAX_W = $clog2(CNT_MAX)
 )(
 	input clk,
-	input nreset,
+	input nreset
 
 	// eth
 
@@ -49,8 +49,8 @@ logic [SEQ_NUM_W-1:0]  mold_itch_msg_seq_num;
 
 // ITCH -> ?
 `ifdef MOLD_MSG_IDS
-logic [SID_W-1:0]     itch_sid_i;
-logic [SID_W-1:0]     itch_sid_o;
+logic [SID_W-1:0]     itch_msg_sid;
+logic [SEQ_NUM_W-1:0] itch_msg_seq_num;
 `endif
 
 logic itch_system_event_v;
@@ -272,7 +272,7 @@ moldudp64 #(
 	.udp_axis_tdata_i (udp_mold_axis_tdata ),
 	.udp_axis_tlast_i (udp_mold_axis_tlast ),
 	.udp_axis_tuser_i (udp_mold_axis_tuser ),
-	.udp_axis_tready_o(udp_mold_axis_tready),
+	.udp_axis_tready_o(mold_udp_axis_tready),
 	
 	`ifdef MOLD_MSG_IDS
 	.mold_msg_sid_o    (mold_itch_msg_sid    ),
@@ -292,7 +292,7 @@ tv_itch5 #( .LEN(LEN),
 	.AXI_DATA_W(AXI_DATA_W), .AXI_KEEP_W(AXI_KEEP_W),
 	.MSG_MAX_W(MSG_MAX_W), .CNT_MAX(CNT_MAX), .CNT_MAX_W(CNT_MAX_W) 
 )
-m_uut(
+m_itch(
 	.clk(clk),
 	.nreset(nreset),
 
@@ -301,10 +301,10 @@ m_uut(
 	.data_i (mold_itch_msg_data),
 
 	`ifdef MOLD_MSG_IDS
-	.mold_sid_i    (mold_itch_sid     ),    
-	.mold_seq_num_i(mold_itch_seq_num ),
-	.mold_sid_o    (itch_sid          ),
-	.mold_seq_num_o(itch_seq_num      ),
+	.mold_sid_i    (mold_itch_msg_sid     ),    
+	.mold_seq_num_i(mold_itch_msg_seq_num ),
+	.mold_sid_o    (itch_msg_sid          ),
+	.mold_seq_num_o(itch_msg_seq_num      ),
 	`endif
 
 	.itch_system_event_v_o(itch_system_event_v),
