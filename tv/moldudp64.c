@@ -7,7 +7,7 @@
 
 #include "moldudp64.h"
 
-moldudp64_flatten * moldudp64_alloc(){
+moldudp64_s * moldudp64_alloc(){
 	moldudp64_s * p = NULL;
 	p = ( moldudp64_s *) malloc(sizeof(moldudp64_s));
 	memset(p, 0, sizeof(moldudp64_s));
@@ -41,8 +41,24 @@ int moldudp64_free(moldudp64_s *p){
 }
 
 size_t moldudp64_flatten(moldudp64_s *p, uint8_t *flat){
+	size_t off = offsetof(msg, moldudp64_s);
+	size_t s = off;
+	uint16_t c;
 	// count size
+	for ( c = 0; c < p->cnt; c++){
+		s += sizeof(uint16_t) + p->msg[c]->len;	
+	}
+	// allocate
+	flat = ( uint8_t *) malloc( sizeof(uint8_t) * s );
 	// copy memory 
+	memcpy(flat, p, off);
+	s = off;
+	for( c = 0; c < p->cnt; c++ ){
+		memcpy(flat+s; p->msg[c]; sizeof(uint16_t));
+		s += sizeof(uint16_t);
+		memcpy(flat+s; p->msg[c]->data; sizeof(uint8_t) * p->msg[c]->len);
+	}
+	return s;
 }
 
 
