@@ -6,6 +6,12 @@
  * This code is provided "as is" without any express or implied warranties. */
 
 #include "moldudp64.h"
+#define _BSD_SOURCE             /* See feature_test_macros(7) */
+#include <endian.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include <stdio.h>
 
 moldudp64_s * moldudp64_alloc(){
 	moldudp64_s * p = NULL;
@@ -16,15 +22,15 @@ moldudp64_s * moldudp64_alloc(){
 
 
 void moldudp64_add_msg(moldudp64_s *p, void *msg_data, size_t msg_len){
-	uint16_t cnt;
-	assert( p->cnt < MOLDUDP64_MSG_CNT_MAX );
+	uint16_t cnt = p->cnt;
+	assert( cnt < MOLDUDP64_MSG_CNT_MAX );
 	
 	// resize msg, add 1
-	cnt = p->cnt+1;
 	p->msg[cnt] = (moldudp64_msg_s*) malloc(sizeof(moldudp64_msg_s)); 
-	p->cnt = cnt;
 	p->msg[cnt]->len  = (uint16_t) msg_len;
 	p->msg[cnt]->data = (uint8_t*) malloc(sizeof(uint8_t)*msg_len);
+	memcpy(p->msg[cnt]->data, msg_data, msg_len * sizeof(uint8_t));
+	p->cnt+=1;
 }
 
 void moldudp64_clear(moldudp64_s *p){
@@ -34,31 +40,67 @@ void moldudp64_clear(moldudp64_s *p){
 	}
 	p->cnt = 0;
 }
-
-int moldudp64_free(moldudp64_s *p){
+void moldudp64_free(moldudp64_s *p){
 	if ( p->cnt != 0 ) moldudp64_clear(p);
 	free(p);
 }
 
 size_t moldudp64_flatten(moldudp64_s *p, uint8_t *flat){
-	size_t off = offsetof(msg, moldudp64_s);
-	size_t s = off;
 	uint16_t c;
+	// big endian versions
+	uint8_t  sid_be[10];
+	uint64_t seq_be;
+	uint16_t cnt_be;
+	uint16_t len_be;	
+	size_t s = offsetof(moldudp64_s, msg);
 	// count size
 	for ( c = 0; c < p->cnt; c++){
 		s += sizeof(uint16_t) + p->msg[c]->len;	
 	}
 	// allocate
 	flat = ( uint8_t *) malloc( sizeof(uint8_t) * s );
-	// copy memory 
-	memcpy(flat, p, off);
-	s = off;
+	// switch from default endian to big endian 
+	for ( int  l = 0, h = sizeof(p->sid)-1 ; l < h ; l++, h-- ){
+		sid_be[h] = p->sid[l];
+		sid_be[l] = p->sid[h];
+	}
+	// copy memory
+	memcpy(flat+s, sid_be, sizeof(sid_be));
+	s += sizeof(sid_be);
+	seq_be =htobe64( p->seq ); 
+	memcpy(flat+s, &seq_be, sizeof(uint64_t));
+	s+= sizeof(seq_be);
+	cnt_be =htobe16( p->cnt ); 
+	memcpy(flat+s, &cnt_be, sizeof(uint16_t));
+	s += sizeof(cnt_be);
+	
 	for( c = 0; c < p->cnt; c++ ){
-		memcpy(flat+s; p->msg[c]; sizeof(uint16_t));
-		s += sizeof(uint16_t);
-		memcpy(flat+s; p->msg[c]->data; sizeof(uint8_t) * p->msg[c]->len);
+		len_be = htobe16(p->msg[c]->len);
+		memcpy(flat+s, &len_be, sizeof(uint16_t));
+		s += sizeof(len_be);
+		memcpy(flat+s, p->msg[c]->data, sizeof(uint8_t) * p->msg[c]->len);
 	}
 	return s;
+}
+
+void moldudp64_set_ids(moldudp64_s* p,const uint8_t sid[10],const uint64_t seq){
+	memcpy(p->sid, sid, sizeof(sid));
+	p->seq = seq;
+}
+
+void moldudp64_print(const moldudp64_s *p){
+	printf("sid 0x");
+	for	( int i = sizeof(p->sid); i >= 0; i--){
+		printf("%02x",p->sid[i]);
+	}
+	printf("\nseq 0x%016lx\n", p->seq);
+	printf("cnt %d",p->cnt);
+	for( int c = 0; c < p->cnt; c++){
+		printf("\n	len %d\n	",p->msg[c]->len);
+		for( int l=p->msg[c]->len; l>= 0; l--)
+			printf("%02x",p->msg[c]->data[l]);
+	}
+	printf("\n");
 }
 
 
