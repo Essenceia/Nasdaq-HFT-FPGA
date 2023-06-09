@@ -14,4 +14,6 @@
 !tv
 !*.c
 !*.h
+!*.a
+!inc
 !makefile
