@@ -1,4 +1,5 @@
 TB_DIR=tb
+TV_DIR=tv
 BUILD=build
 CONF=conf
 FLAGS=-Wall -g2012 -gassertions -gstrict-expr-width
@@ -15,8 +16,11 @@ top: top.v moldudp64 itch
 test: ${TB_DIR}/hft_tb.v top
 	iverilog ${FLAGS} -s hft_tb ${DEFINES} -o ${BUILD}/hft_tb top.v ${TB_DIR}/hft_tb.v -y moldudp64/ -y itch/
 
-run: test
-	vvp ${BUILD}/hft_tb
+hello: ${TV_DIR}/hello.c
+	iverilog-vpi ${TV_DIR}/hello.c
+
+run: test hello
+	vvp -M. -mhello ${BUILD}/hft_tb
 
 wave : run
 	${VIEW} ${BUILD}/${WAVE_FILE} ${CONF}/${WAVE_CONF}

@@ -12,3 +12,6 @@
 !.gitattribute
 !.gitmodules
 !tv
+!*.c
+!*.h
+!makefile

@@ -33,8 +33,13 @@ logic [SID_W-1:0]      mold_msg_sid_o;
 logic [SEQ_NUM_W-1:0]  mold_msg_seq_num_o;
 `endif
 
+int h;
+
 initial
 begin
+	h = 34;
+	$hello(h);
+	$display("Got %d", h);
 	$dumpfile("build/wave.vcd"); // create a VCD waveform dump called "wave.vcd"
     $dumpvars(0, hft_tb);
 	$display("Test start");

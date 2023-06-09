@@ -254,7 +254,6 @@ logic [6*LEN-1:0] itch_retail_price_improvement_indicator_timestamp;
 logic [8*LEN-1:0] itch_retail_price_improvement_indicator_stock;
 logic [1*LEN-1:0] itch_retail_price_improvement_indicator_interest_flag;
 
-
 // mold
 moldudp64 #(
 	.AXI_DATA_W(AXI_DATA_W),
