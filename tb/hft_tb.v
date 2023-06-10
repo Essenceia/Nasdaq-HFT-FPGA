@@ -33,74 +33,45 @@ logic [SID_W-1:0]      mold_msg_sid_o;
 logic [SEQ_NUM_W-1:0]  mold_msg_seq_num_o;
 `endif
 
-int h;
+int t;
+logic tb_ready;
+logic tb_valid;
+logic [63:0] tb_data;
+logic [7:0]  tb_keep;
+
+task vpi_task;
+begin
+	integer i;
+	for(i=0; i < 100; i++ ) begin
+		#10	
+		tb_ready = udp_axis_tready_o;
+		$tb(tb_ready, tb_valid, tb_data, tb_keep);
+		udp_axis_tvalid_i = tb_valid;
+		udp_axis_tdata_i  = tb_data;
+		udp_axis_tkeep_i  = tb_keep;
+		udp_axis_tlast_i  = ~&tb_keep;
+	end
+end
+endtask
 
 initial
 begin
-	h = 34;
-	$hello(h);
-	$display("Got %d", h);
 	$dumpfile("build/wave.vcd"); // create a VCD waveform dump called "wave.vcd"
     $dumpvars(0, hft_tb);
 	$display("Test start");
-	udp_axis_tvalid_i = 1'b0;
-	udp_axis_tkeep_i  = {AXI_KEEP_W{1'bx}};
-	udp_axis_tdata_i  = {AXI_DATA_W{1'bx}};
-	udp_axis_tlast_i  = 1'bx;
-	udp_axis_tuser_i  = 1'bx;
-	# 10
-	nreset = 1'b1;
 	#10
-	/* axi stream */ 
-	udp_axis_tvalid_i = 1'b1;	
-	udp_axis_tkeep_i  = {AXI_KEEP_W{ 1'b1}};
-	udp_axis_tlast_i = 1'b0;
-	udp_axis_tuser_i = 1'b0;
-	// header : sid
-	moldudp_header[SID_W-1:0] = 80'hDEADBEEF;
-	// header : seq num
-	moldudp_header[(SID_W+SEQ_NUM_W)-1:SID_W] = 64'hF0F0F0F0F0F0F0F0;
-	// header : msg cnt
-	moldudp_header[MH_W-1:MH_W-ML_W] = 'd3;
 
-	moldudp_msg_len = 16'd16;
-	/* Header 0*/
-	udp_axis_tdata_i = moldudp_header[AXI_DATA_W-1:0];
+	t = $tb_init("/home/pitchu/rtl/hft/tb/12302019.NASDAQ_ITCH50");
+	$display("TB");
+	tb_ready = 1'b0;
+	nreset = 1'b0;
 	#10
-	/* header 1*/
-	udp_axis_tdata_i = moldudp_header[(AXI_DATA_W*2)-1:AXI_DATA_W];
+	tb_ready = 1'b1;
+ 	nreset = 1'b1;
+	udp_axis_tuser_i = 1'b0;	
 	#10
-	/* header 2 + msg 0*/
-	udp_axis_tdata_i ={ 16'hffff, moldudp_msg_len, moldudp_header[MH_W-1:AXI_DATA_W*2] };
+	vpi_task();
 	#10
-	/* payload 0 of msg 0 */
-	udp_axis_tdata_i = {16{4'ha}};
-	#10
-	/* payload 1 of msg 0 + payload 0 of msg 1*/
-	moldudp_msg_len = 16'd8;
-	udp_axis_tdata_i = { moldudp_msg_len, {12{4'hB}}};
-	#10
-	/* payload 1 of msg 1 */
-	udp_axis_tdata_i = {16{4'hD}};
-	#10
-	/* payload 0 of msg 2 */
-	moldudp_msg_len = 16'd11;
-	udp_axis_tdata_i = { {12{4'hE}} , moldudp_msg_len};
-	#10
-	/* payload 1 of msg 2 */
-	udp_axis_tdata_i = {'X ,8'hAB ,{8{4'hF}}};
-	udp_axis_tkeep_i = { '0, 4'b1111};
-	udp_axis_tlast_i = 1'b1;
-	#10
-	/* no msg */
-	udp_axis_tvalid_i = 1'b0;
-	udp_axis_tkeep_i  = 'x;
-	udp_axis_tlast_i  = 'x; 
-	udp_axis_tdata_i  = 'x;
-	#10	
-	#10	
-	#10	
-	#10	
 	$display("Test end");
 	$finish;
 end

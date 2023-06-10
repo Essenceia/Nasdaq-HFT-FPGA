@@ -37,7 +37,7 @@ void moldudp64_free(moldudp64_s *p);
 
 // flatten the structure into a byte array, applies correct endianness
 // to flattened version
-size_t moldudp64_flatten(moldudp64_s *p, uint8_t *flat);
+size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat);
 
 
 void moldudp64_set_ids(moldudp64_s* p,const uint8_t sid[10],const uint64_t seq);

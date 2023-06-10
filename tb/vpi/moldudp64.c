@@ -20,7 +20,6 @@ moldudp64_s * moldudp64_alloc(){
 	return p;
 }
 
-
 void moldudp64_add_msg(moldudp64_s *p, void *msg_data, size_t msg_len){
 	uint16_t cnt = p->cnt;
 	assert( cnt < MOLDUDP64_MSG_CNT_MAX );
@@ -30,13 +29,14 @@ void moldudp64_add_msg(moldudp64_s *p, void *msg_data, size_t msg_len){
 	p->msg[cnt]->len  = (uint16_t) msg_len;
 	p->msg[cnt]->data = (uint8_t*) malloc(sizeof(uint8_t)*msg_len);
 	memcpy(p->msg[cnt]->data, msg_data, msg_len * sizeof(uint8_t));
+	
 	p->cnt+=1;
 }
 
 void moldudp64_clear(moldudp64_s *p){
 	for ( uint16_t i = 0; i < p->cnt; i++){
+		assert(p->msg[i]->data);
 		free(p->msg[i]->data);
-		free(p->msg[i]);
 	}
 	p->cnt = 0;
 }
@@ -45,7 +45,7 @@ void moldudp64_free(moldudp64_s *p){
 	free(p);
 }
 
-size_t moldudp64_flatten(moldudp64_s *p, uint8_t *flat){
+size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat){
 	uint16_t c;
 	// big endian versions
 	uint8_t  sid_be[10];
@@ -57,28 +57,38 @@ size_t moldudp64_flatten(moldudp64_s *p, uint8_t *flat){
 	for ( c = 0; c < p->cnt; c++){
 		s += sizeof(uint16_t) + p->msg[c]->len;	
 	}
+	assert(s > 0 );
 	// allocate
-	flat = ( uint8_t *) malloc( sizeof(uint8_t) * s );
+	if ( *flat == NULL ){
+		*flat = ( uint8_t *) malloc( sizeof(uint8_t) * s );
+	}else{ 
+		*flat = realloc(*flat, sizeof(uint8_t) * s);
+	}
+	assert(*flat);
+	assert(s);
+	// reset offset
+	s = 0;
 	// switch from default endian to big endian 
 	for ( int  l = 0, h = sizeof(p->sid)-1 ; l < h ; l++, h-- ){
 		sid_be[h] = p->sid[l];
 		sid_be[l] = p->sid[h];
 	}
 	// copy memory
-	memcpy(flat+s, sid_be, sizeof(sid_be));
+	memcpy(*flat+s, sid_be, sizeof(sid_be));
 	s += sizeof(sid_be);
 	seq_be =htobe64( p->seq ); 
-	memcpy(flat+s, &seq_be, sizeof(uint64_t));
+	memcpy(*flat+s, &seq_be, sizeof(uint64_t));
 	s+= sizeof(seq_be);
 	cnt_be =htobe16( p->cnt ); 
-	memcpy(flat+s, &cnt_be, sizeof(uint16_t));
+	memcpy(*flat+s, &cnt_be, sizeof(uint16_t));
 	s += sizeof(cnt_be);
 	
 	for( c = 0; c < p->cnt; c++ ){
 		len_be = htobe16(p->msg[c]->len);
-		memcpy(flat+s, &len_be, sizeof(uint16_t));
+		memcpy(*flat+s, &len_be, sizeof(uint16_t));
 		s += sizeof(len_be);
-		memcpy(flat+s, p->msg[c]->data, sizeof(uint8_t) * p->msg[c]->len);
+		memcpy(*flat+s, p->msg[c]->data, sizeof(uint8_t) * p->msg[c]->len);
+		s+= p->msg[c]->len;
 	}
 	return s;
 }

@@ -1,5 +1,5 @@
 TB_DIR=tb
-TV_DIR=tv
+VPI_DIR=$(TB_DIR)/vpi
 BUILD=build
 CONF=conf
 FLAGS=-Wall -g2012 -gassertions -gstrict-expr-width
@@ -11,19 +11,19 @@ VIEW=gtkwave
 all: top run
 
 top: top.v moldudp64 itch
-	iverilog ${FLAGS} -s hft ${DEFINES} -o ${BUILD}/hft top.v -y moldudp64/ -y itch/
+	iverilog $(FLAGS) -s hft $(DEFINES) -o $(BUILD)/hft top.v -y moldudp64/ -y itch/
 
-test: ${TB_DIR}/hft_tb.v top
-	iverilog ${FLAGS} -s hft_tb ${DEFINES} -o ${BUILD}/hft_tb top.v ${TB_DIR}/hft_tb.v -y moldudp64/ -y itch/
+test: $(TB_DIR)/hft_tb.v top
+	iverilog $(FLAGS) -s hft_tb $(DEFINES) -o $(BUILD)/hft_tb top.v $(TB_DIR)/hft_tb.v -y moldudp64/ -y itch/
 
-hello: ${TV_DIR}/hello.c
-	iverilog-vpi ${TV_DIR}/hello.c
+run: test vpi
+	vvp -M $(VPI_DIR) -mtb $(BUILD)/hft_tb
 
-run: test hello
-	vvp -M. -mhello ${BUILD}/hft_tb
+vpi:
+	cd $(VPI_DIR) && $(MAKE) tb.vpi
 
 wave : run
-	${VIEW} ${BUILD}/${WAVE_FILE} ${CONF}/${WAVE_CONF}
+	$(VIEW) $(BUILD)/$(WAVE_FILE) $(CONF)/$(WAVE_CONF)
 
 clean:
-	rm -fr ${BUILD}/*
+	rm -fr $(BUILD)/*

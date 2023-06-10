@@ -8,7 +8,7 @@ to support UDP multicast.
 
 ![Work in progress!](/doc/wip.jpg)
 
-Areas in grayed out are our planned but not yet in progress features.
+Areas grayed out are our planned but not yet in progress features.
 
 # License
 
