@@ -4,14 +4,17 @@ FLAGS = -std=gnu99 -Wall -Wextra -Wconversion -Wshadow -Wundef -fno-common  -Wno
 CC = cc $(if $(debug),-DDEBUG -g)
 LD = cc
 LIB=-L. -litch
-test: moldudp64.o test.o libitch.a
-	$(LD) -o test -g test.o moldudp64.o $(LIB)
+test: moldudp64.o test.o tv.o libitch.a
+	$(LD) -o test -g test.o moldudp64.o tv.o $(LIB)
 
 test.o:test.c
 	$(CC) -I$(INC) -c test.c $(FLAGS)
 
 moldudp64.o: moldudp64.c moldudp64.h
 	$(CC) -c moldudp64.c $(FLAGS)
+
+tv.o: tv.c tv.h
+	$(CC) -I$(INC) -c tv.c $(FLAGS)
 
 clean:
 	rm -f test	

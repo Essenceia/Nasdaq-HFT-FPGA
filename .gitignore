@@ -11,9 +11,10 @@
 !.gitignore
 !.gitattribute
 !.gitmodules
-!tv
+!vpi
 !*.c
 !*.h
 !*.a
 !inc
-!makefile
+!inc/gen
+!Makefile

@@ -1,13 +1,23 @@
 # include  <vpi_user.h>
+#include "tv.h"
 
-static int hello_compiletf(char*user_data)
+#define AXI_TVALID_W 1
+#define AXI_TKEEP_W  8
+#define AXI_TDATA_W  64
+
+tv_t * tv_s = NULL;
+
+static int tb_compiletf(char*user_data)
 {
-      return 0;
+	tv_s = tv_alloc("/home/pitchu/rtl/hft/tv/12302019.NASDAQ_ITCH50");
+	if ( tv_s == NULL) return 1;
+	tv_create_packet( tv_s, 1 );
+    return 0;
 }
 
-static int hello_calltf(char*user_data)
+static int tb_calltf(char*user_data)
 {
-      vpi_printf("Hello, World!\n");
+      vpi_printf("tb, World!\n");
 
 	vpiHandle systfref, args_iter, argh;
   struct t_vpi_value argval;
@@ -33,22 +43,30 @@ static int hello_calltf(char*user_data)
   return 0;
 }
 
-void hello_register()
+static PLI_INT32 tb_sizetf(char*x)
+{
+	// tvalid : 1
+	// tkeep : 8
+	// tdata : 64
+      return AXI_TDATA_W + AXI_TKEEP_W + AXI_TDATA_W;
+}
+
+void tb_register()
 {
       s_vpi_systf_data tf_data;
 
       tf_data.type      = vpiSysFunc;
       tf_data.sysfunctype  = vpiSysFuncInt;
-      tf_data.tfname    = "$hello";
-      tf_data.calltf    = hello_calltf;
-      tf_data.compiletf = hello_compiletf;
-      tf_data.sizetf    = 32;
+      tf_data.tfname    = "$tb";
+      tf_data.calltf    = tb_calltf;
+      tf_data.compiletf = tb_compiletf;
+      tf_data.sizetf    = 73; // 1 + 8 + 64 = 73
       tf_data.user_data = 0;
       vpi_register_systf(&tf_data);
 }
 
 void (*vlog_startup_routines[])() = {
-    hello_register,
+    tb_register,
     0
 };
 
