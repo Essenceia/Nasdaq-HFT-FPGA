@@ -6,7 +6,7 @@ trading low level compatible with nasdaq's itch/otch protocols.
 This is an ungoing project, work is currently being done on integrating MoldUDP64 and Totalview-ITCH 5.0, modules
 to support UDP multicast.
 
-![Work in progress!](/doc/wip.png)
+![Work in progress!](/doc/wip.jpg)
 
 Areas in grayed out are our planned but not yet in progress features.
 
