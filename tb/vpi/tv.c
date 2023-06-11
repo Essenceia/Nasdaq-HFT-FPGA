@@ -28,6 +28,11 @@ void tv_create_packet(tv_t * t, size_t itch_n){
 	size_t r = 0; // read size
 	size_t n; // number of messages read
 	uint8_t buff[ITCH_MSG_MAX_LEN];		
+	uint8_t sid[10] = { 0xff, 0xdd, 0xcc, 0xbb, 0xaa,
+					    0x99, 0x88, 0x77, 0x66, 0x55 };
+	uint64_t seq = 0xDEADBEAF0000AAAA;
+
+	moldudp64_set_ids(t->mold_s, sid, seq); 
 	// read itch messages from file
 	for( n = 0; n < itch_n ; n++){
 		r = get_next_bin_msg(t->fptr, buff, ITCH_MSG_MAX_LEN);
@@ -56,4 +61,5 @@ void tv_free(tv_t * t)
 {
 	moldudp64_free(t->mold_s);
 	fclose(t->fptr);
+	free(t->flat);
 }

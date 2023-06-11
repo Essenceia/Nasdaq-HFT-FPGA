@@ -37,6 +37,7 @@ void moldudp64_clear(moldudp64_s *p){
 	for ( uint16_t i = 0; i < p->cnt; i++){
 		assert(p->msg[i]->data);
 		free(p->msg[i]->data);
+		free(p->msg[i]);
 	}
 	p->cnt = 0;
 }
@@ -94,7 +95,7 @@ size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat){
 }
 
 void moldudp64_set_ids(moldudp64_s* p,const uint8_t sid[10],const uint64_t seq){
-	memcpy(p->sid, sid, sizeof(sid));
+	memcpy(&p->sid, sid, sizeof(uint8_t)*10);
 	p->seq = seq;
 }
 
