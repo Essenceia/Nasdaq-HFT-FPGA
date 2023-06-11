@@ -6,6 +6,7 @@
  * This code is provided "as is" without any express or implied warranties. */ 
 
 #include "tb.h"
+#include "tb_utils.h"
 #include "axis.h"
 #include <assert.h>
 #include <string.h>

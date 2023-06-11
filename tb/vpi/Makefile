@@ -20,11 +20,14 @@ axis.o: axis.c axis.h
 tv.o: tv.c tv.h
 	$(CC) -I$(INC) -c tv.c $(FLAGS)
 
+tb_utils.o: tb_utils.c tb_utils.h
+	$(CC) -I$(INC) -I$(IVERILOG) -c tb_utils.c $(FLAGS)
+
 tb.o: tb.c tb.h
 	$(CC) -I$(INC) -I$(IVERILOG) -c tb.c $(FLAGS)
  
-tb.vpi: tb.o tv.o moldudp64.o axis.o libitch.a
-	$(LD) -shared -o tb.vpi tb.o tv.o axis.o moldudp64.o $(LIB) -lvpi
+tb.vpi: tb.o tb_utils.o tv.o moldudp64.o axis.o libitch.a
+	$(LD) -shared -o tb.vpi tb.o tb_utils.o tv.o axis.o moldudp64.o $(LIB) -lvpi
 
 clean:
 	rm -f test	
