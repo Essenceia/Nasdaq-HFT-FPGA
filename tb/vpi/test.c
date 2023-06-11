@@ -17,7 +17,7 @@
 #define RAND_SEED 1
 #endif // RAND_SEED
 
-#define AXI_PAYLOAD 2
+#define AXI_PAYLOAD 200
 int main(){
 	uint64_t d;
 	uint8_t k;
