@@ -1,3 +1,9 @@
+/* Copyright (c) 2023, Julia Desmazes. All rights reserved.
+ * 
+ * This work is licensed under the Creative Commons Attribution-NonCommercial
+ * 4.0 International License. 
+ * 
+ * This code is provided "as is" without any express or implied warranties. */ 
 
 parameter AXI_DATA_W = 64;
 parameter AXI_KEEP_W = AXI_DATA_W/8;
@@ -49,6 +55,7 @@ begin
 		udp_axis_tvalid_i = tb_valid;
 		udp_axis_tdata_i  = tb_data;
 		udp_axis_tkeep_i  = tb_keep;
+		udp_axis_tuser_i  = 1'b0;
 		udp_axis_tlast_i  = ~&tb_keep;
 	end
 end
@@ -68,9 +75,10 @@ begin
 	#10
 	tb_ready = 1'b1;
  	nreset = 1'b1;
-	udp_axis_tuser_i = 1'b0;	
-	#10
+	udp_axis_tuser_i = 1'b0;
+	udp_axis_tvalid_i = 1'b0;	
 	vpi_task();
+	#10
 	#10
 	$display("Test end");
 	$finish;

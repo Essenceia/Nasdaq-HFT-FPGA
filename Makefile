@@ -26,4 +26,7 @@ wave : run
 	$(VIEW) $(BUILD)/$(WAVE_FILE) $(CONF)/$(WAVE_CONF)
 
 clean:
+	cd $(VPI_DIR) && $(MAKE) clean
 	rm -fr $(BUILD)/*
+	rm -f *.o
+	rm -f vgcore.*
