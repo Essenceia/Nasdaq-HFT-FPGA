@@ -23,7 +23,7 @@ moldudp64_s * moldudp64_alloc(){
 void moldudp64_add_msg(moldudp64_s *p, void *msg_data, size_t msg_len){
 	uint16_t cnt = p->cnt;
 	assert( cnt < MOLDUDP64_MSG_CNT_MAX );
-	
+
 	// resize msg, add 1
 	p->msg[cnt] = (moldudp64_msg_s*) malloc(sizeof(moldudp64_msg_s)); 
 	p->msg[cnt]->len  = (uint16_t) msg_len;
@@ -59,6 +59,7 @@ size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat){
 		s += sizeof(uint16_t) + p->msg[c]->len;	
 	}
 	assert(s > 0 );
+	printf("mold flaten cnt %d msg 0 len %d ( %#x ) \n", p->cnt, p->msg[0]->len,p->msg[0]->len );
 	// allocate
 	if ( *flat == NULL ){
 		*flat = ( uint8_t *) malloc( sizeof(uint8_t) * s );

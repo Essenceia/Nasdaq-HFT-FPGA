@@ -478,6 +478,12 @@ begin
 		udp_axis_tkeep_i  = tb_keep;
 		udp_axis_tuser_i  = 1'b0;
 		udp_axis_tlast_i  = ~( tb_keep == 8'hff);
+		if ( udp_axis_tlast_i == 1'b1 ) begin
+			// TODO remove : back to back bug
+			#30
+			udp_axis_tvalid_i = 1'b0;
+			
+		end
 	end
 end
 endtask
