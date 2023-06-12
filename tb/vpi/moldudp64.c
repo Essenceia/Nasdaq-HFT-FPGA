@@ -80,10 +80,10 @@ size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat){
 	seq_be =htobe64( p->seq ); 
 	memcpy(*flat+s, &seq_be, sizeof(uint64_t));
 	s+= sizeof(seq_be);
-	cnt_be =htobe16( p->cnt ); 
+	cnt_be =htobe16( p->cnt );
 	memcpy(*flat+s, &cnt_be, sizeof(uint16_t));
 	s += sizeof(cnt_be);
-	
+	//printf("cnt le %#x be %#x\n", p->cnt, cnt_be); 	
 	for( c = 0; c < p->cnt; c++ ){
 		len_be = htobe16(p->msg[c]->len);
 		memcpy(*flat+s, &len_be, sizeof(uint16_t));

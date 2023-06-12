@@ -61,7 +61,6 @@ static int tb_calltf(char*user_data)
 	
 	tready = tready_val.value.integer;
 
-	//vpi_printf("TB call : tread %d\n", tready);
 
 	// tvalid
 	tvalid_h = vpi_scan(argv);
@@ -71,6 +70,7 @@ static int tb_calltf(char*user_data)
 	if ( tready ) {
 		tvalid_val.value.scalar = vpi1; // 1'b1
 		tdata = tv_axis_get_next_64b(tv_s , &tkeep);
+		vpi_printf("TB call : tdata %#lx tkeep %#x\n", tdata, tkeep);
 		//vpi_printf("Flatten finished, idx %ld, len %ld\n", tv_s->flat_idx, tv_s->flat_l);
 		//vpi_printf("TB call : data %0.16lx\n", tdata);
 		

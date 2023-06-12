@@ -42,7 +42,7 @@ void tb_vpi_logic_put_64b(vpiHandle argv, uint64_t var){
 	v.value.vector = calloc(2, sizeof(s_vpi_vecval));
 	v.value.vector[0].aval =(uint32_t) var; //32 lsb 
 	v.value.vector[0].bval = 0;
-	v.value.vector[1].aval =(uint32_t) var >> 32; //32 msb 
+	v.value.vector[1].aval =(uint32_t) ( var >> 32 ); //32 msb 
 	v.value.vector[1].bval = 0;
 	vpi_put_value(h, &v, 0, vpiNoDelay);	
 	free(v.value.vector);	
