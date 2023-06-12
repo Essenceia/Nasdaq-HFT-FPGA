@@ -21,13 +21,16 @@ tv.o: tv.c tv.h
 	$(CC) -I$(INC) -c tv.c $(FLAGS)
 
 tb_utils.o: tb_utils.c tb_utils.h
-	$(CC) -I$(INC) -I$(IVERILOG) -c tb_utils.c $(FLAGS)
+	$(CC) -I$(IVERILOG) -c tb_utils.c $(FLAGS)
 
 tb.o: tb.c tb.h
 	$(CC) -I$(INC) -I$(IVERILOG) -c tb.c $(FLAGS)
- 
-tb.vpi: tb.o tb_utils.o tv.o moldudp64.o axis.o libitch.a
-	$(LD) -shared -o tb.vpi tb.o tb_utils.o tv.o axis.o moldudp64.o $(LIB) -lvpi
+
+tb_itch.o: tb_itch.c tb_itch.h
+	$(CC) -I$(INC) -I$(IVERILOG) -c tb_itch.c $(FLAGS)
+  
+tb.vpi: tb.o tb_utils.o tb_itch.o tv.o moldudp64.o axis.o libitch.a
+	$(LD) -shared -o tb.vpi tb.o tb_itch.o tv.o axis.o moldudp64.o tb_utils.o $(LIB) -lvpi
 
 clean:
 	rm -f test	

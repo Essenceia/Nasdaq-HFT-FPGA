@@ -11,7 +11,7 @@
 /* Note : Eventhough calloc set bits to 0 we are still manually
  * writing bval's to 0 for clarity */
 
-static void tb_vpi_logic_put_1b(vpiHandle argv, uint8_t var){
+void tb_vpi_logic_put_1b(vpiHandle argv, uint8_t var){
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
@@ -19,9 +19,8 @@ static void tb_vpi_logic_put_1b(vpiHandle argv, uint8_t var){
 	v.format = vpiScalarVal;
 	v.value.scalar = var ? vpi1 : vpi0;
 	vpi_put_value(h, &v, 0, vpiNoDelay);
-	
 }
-static void tb_vpi_logic_put_32b(vpiHandle argv, uint32_t var){
+void tb_vpi_logic_put_32b(vpiHandle argv, uint32_t var){
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
@@ -30,10 +29,11 @@ static void tb_vpi_logic_put_32b(vpiHandle argv, uint32_t var){
 	v.value.vector = calloc(1, sizeof(s_vpi_vecval));
 	v.value.vector[0].aval = var;
 	v.value.vector[0].bval = 0;
-	vpi_put_value(h, &v, 0, vpiNoDelay);	
+	vpi_put_value(h, &v, 0, vpiNoDelay);
+	free(v.value.vector);	
 }
 
-static void tb_vpi_logic_put_64b(vpiHandle argv, uint64_t var){
+void tb_vpi_logic_put_64b(vpiHandle argv, uint64_t var){
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
@@ -45,9 +45,10 @@ static void tb_vpi_logic_put_64b(vpiHandle argv, uint64_t var){
 	v.value.vector[1].aval =(uint32_t) var >> 32; //32 msb 
 	v.value.vector[1].bval = 0;
 	vpi_put_value(h, &v, 0, vpiNoDelay);	
+	free(v.value.vector);	
 }
 
-static void tb_vpi_logic_put_48b(vpiHandle argv, uint64_t var){
+void tb_vpi_logic_put_48b(vpiHandle argv, uint64_t var){
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
@@ -61,6 +62,7 @@ static void tb_vpi_logic_put_48b(vpiHandle argv, uint64_t var){
 	v.value.vector[1].aval =(uint32_t) 0xffff0000 | ( var >> 32 ); //32 msb 
 	v.value.vector[1].bval = 0xffff0000;
 	vpi_put_value(h, &v, 0, vpiNoDelay);	
+	free(v.value.vector);	
 }
 
 
@@ -83,4 +85,5 @@ void _tb_vpi_logic_put_8b_var_arr(vpiHandle argv, uint8_t *arr, size_t len){
 		}
 	}
 	vpi_put_value(h, &v, 0, vpiNoDelay);	
+	free(v.value.vector);	
 }

@@ -1,5 +1,5 @@
 - Add UDP ethernet capability
-- Create testbench
 - Add formal 
-
+- Add tb_end with memory free for vpi
+- Compare itch values with struct
 - Futur small use case to debug system behavior : filter out all packets exept MPID = OPTU
