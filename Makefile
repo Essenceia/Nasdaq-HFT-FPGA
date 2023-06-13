@@ -25,6 +25,9 @@ vpi:
 wave : run
 	$(VIEW) $(BUILD)/$(WAVE_FILE) $(CONF)/$(WAVE_CONF)
 
+valgrind: test vpi
+	valgrind vvp -M $(VPI_DIR) -mtb $(BUILD)/hft_tb
+
 clean:
 	cd $(VPI_DIR) && $(MAKE) clean
 	rm -fr $(BUILD)/*

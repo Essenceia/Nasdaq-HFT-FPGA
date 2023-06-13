@@ -3,3 +3,4 @@
 - Add tb_end with memory free for vpi
 - Compare itch values with struct
 - Futur small use case to debug system behavior : filter out all packets exept MPID = OPTU
+- Found memory leak in iverilog : look into leak source and eventually fix ?

@@ -171,13 +171,18 @@ static int tb_itch_compiletf(char* path)
 }
 
 static PLI_INT32 tb_itch_calltf(char*user_data){
-
+	tv_itch5_s *itch_s;
 	vpi_printf("TB itch\n");
 	s_vpi_value value;
 	vpiHandle sys = vpi_handle(vpiSysTfCall, 0);
 	vpiHandle argv = vpi_iterate(vpiArgument, sys);
 	vpiHandle arg;
 	assert(argv);
+	itch_s = tb_itch_fifo_pop(tv_s->itch_fifo_s);
+	if ( itch_s != NULL ){
+		tb_itch_put_struct(argv, itch_s);
+		free(itch_s);
+	}
 	vpi_free_object(argv);
 	return 0;
 }
@@ -195,8 +200,34 @@ void tb_itch_register()
 	tf_itch_data.user_data = 0;
 	vpi_register_systf(&tf_itch_data);
 }
+static int tb_end_compiletf(char* path)
+{
+    return 0;
+}
+
+static PLI_INT32 tb_end_calltf(char*user_data){
+	if ( tv_s != NULL)tv_free(tv_s);	
+	return 0;
+}
+
+void tb_end_register()
+{
+	s_vpi_systf_data tf_end_data;
+	
+	tf_end_data.type      = vpiSysFunc;
+	tf_end_data.sysfunctype  = vpiSysFuncInt;
+	tf_end_data.tfname    = "$tb_end";
+	tf_end_data.calltf    = tb_end_calltf;
+	tf_end_data.compiletf = tb_end_compiletf;
+	tf_end_data.sizetf    = 0;
+	tf_end_data.user_data = 0;
+	vpi_register_systf(&tf_end_data);
+}
+
+
 void (*vlog_startup_routines[])() = {
     tb_init_register,
+    tb_end_register,
     tb_register,
 	tb_itch_register,
     0

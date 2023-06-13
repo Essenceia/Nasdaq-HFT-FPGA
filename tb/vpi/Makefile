@@ -18,7 +18,7 @@ axis.o: axis.c axis.h
 	$(CC) -c axis.c $(FLAGS)
  
 tv.o: tv.c tv.h
-	$(CC) -I$(INC) -c tv.c $(FLAGS)
+	$(CC) -I$(INC) -I$(IVERILOG) -c tv.c $(FLAGS)
 
 tb_utils.o: tb_utils.c tb_utils.h
 	$(CC) -I$(IVERILOG) -c tb_utils.c $(FLAGS)
@@ -30,7 +30,7 @@ tb_itch.o: tb_itch.c tb_itch.h
 	$(CC) -I$(INC) -I$(IVERILOG) -c tb_itch.c $(FLAGS)
   
 tb.vpi: tb.o tb_utils.o tb_itch.o tv.o moldudp64.o axis.o libitch.a
-	$(LD) -shared -o tb.vpi tb.o tb_itch.o tv.o axis.o moldudp64.o tb_utils.o $(LIB) -lvpi
+	$(LD) -shared -o tb.vpi tb.o  tv.o axis.o moldudp64.o tb_itch.o tb_utils.o $(LIB) -lvpi
 
 clean:
 	rm -f test	

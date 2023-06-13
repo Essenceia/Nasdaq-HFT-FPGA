@@ -10,15 +10,16 @@
 
 
 #include "moldudp64.h"
-#include "itch_s.h"
+#include "tb_itch.h"
 
 #include <stdio.h>
 typedef struct{
-	FILE *       fptr;
-	moldudp64_s *mold_s;
-	uint8_t *flat;
-	size_t  flat_l;
-	size_t  flat_idx;
+	FILE *           fptr;
+	moldudp64_s     *mold_s;
+	uint8_t         *flat;
+	size_t           flat_l;
+	size_t           flat_idx;
+	tv_itch5_fifo_t *itch_fifo_s;
 }tv_t;
 
 tv_t * tv_alloc(const char * path);
