@@ -12,6 +12,7 @@ tv_itch5_fifo_t * tb_itch_fifo_alloc(){
 }
 
 void tb_itch_fifo_push(tv_itch5_fifo_t *fifo, tv_itch5_s *new){
+
 	tv_itch5_fifo_elem_t *wrap; // wrapper
 	assert(fifo);
 	wrap = (tv_itch5_fifo_elem_t *) malloc( sizeof(tv_itch5_fifo_elem_t));
@@ -20,7 +21,11 @@ void tb_itch_fifo_push(tv_itch5_fifo_t *fifo, tv_itch5_s *new){
 	if ( fifo->w != NULL){
 		fifo->w->n = wrap;
 	}
+	if ( fifo->r == NULL ){
+		fifo->r = wrap;
+	}
 	fifo->w = wrap->n;
+	
 }
 tv_itch5_s* tb_itch_fifo_pop(tv_itch5_fifo_t *fifo){
 	tv_itch5_fifo_elem_t *pop;
@@ -53,6 +58,7 @@ tv_itch5_s *tb_itch_create_struct(uint8_t *data, size_t data_len){
 	msg_type = data[0];
 	rptr = (tv_itch5_s*) malloc( sizeof(tv_itch5_s));
 	fill_tv_itch5((char)msg_type, data+1, data_len-1, rptr);
+	//print_tv_itch5( rptr);
 	return rptr;
 }
 

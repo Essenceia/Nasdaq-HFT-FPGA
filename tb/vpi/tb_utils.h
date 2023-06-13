@@ -22,13 +22,13 @@ static inline void tb_vpi_logic_put_16b(vpiHandle argv, uint16_t var){
 
 void tb_vpi_logic_put_64b(vpiHandle argv, uint64_t var);
 
-void tb_vpi_logic_put_48b(vpiHandle argv, uint64_t var);
+void tb_vpi_logic_put_48b(vpiHandle argv, uint8_t var[6]);
 
 // puts an array of uint8_t of variable length to a vector
 void _tb_vpi_logic_put_8b_var_arr(vpiHandle argv, uint8_t *arr, size_t len);
 
 #define TB_UTILS_PUT_8B_ARR(X) \
- inline void tb_vpi_logic_put_##X##b(vpiHandle argv, uint8_t *arr){ \
+ static inline void tb_vpi_logic_put_##X##b(vpiHandle argv, uint8_t *arr){ \
 	_tb_vpi_logic_put_8b_var_arr( argv, arr, X ); \
 }
 

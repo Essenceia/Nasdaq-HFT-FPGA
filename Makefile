@@ -1,9 +1,14 @@
+ifndef debug
+#debug :=
+endif
+
 TB_DIR=tb
 VPI_DIR=$(TB_DIR)/vpi
 BUILD=build
 CONF=conf
 FLAGS=-Wall -g2012 -gassertions -gstrict-expr-width
-DEFINES=-DMISS_DET -DHEARTBEAT -DMOLD_MSG_IDS
+DEFINES=-DMISS_DET -DHEARTBEAT -DMOLD_MSG_IDS $(if $(debug), -DDEBUG)
+DEBUG_FLAG=$(if $(debug), debug=1)
 WAVE_FILE=wave.vcd
 WAVE_CONF=wave.conf
 VIEW=gtkwave
@@ -20,7 +25,7 @@ run: test vpi
 	vvp -M $(VPI_DIR) -mtb $(BUILD)/hft_tb
 
 vpi:
-	cd $(VPI_DIR) && $(MAKE) tb.vpi
+	cd $(VPI_DIR) && $(MAKE) tb.vpi $(DEBUG_FLAG) 
 
 wave : run
 	$(VIEW) $(BUILD)/$(WAVE_FILE) $(CONF)/$(WAVE_CONF)

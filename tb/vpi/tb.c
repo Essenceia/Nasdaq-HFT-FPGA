@@ -22,7 +22,9 @@ static tv_t * tv_s = NULL;
 
 static int tb_compiletf(char*user_data)
 {
+	#ifdef DEBUG
 	vpi_printf("TB compile\n");
+	#endif
     return 0;
 }
 
@@ -38,7 +40,9 @@ static int tb_compiletf(char*user_data)
  */
 static int tb_calltf(char*user_data)
 {
-   // vpi_printf("TB call, World!\n");
+	#ifdef DEBUG
+   	vpi_printf("TB call\n");
+	#endif
 	assert(tv_s);
 	
 	uint8_t  tready, tvalid, tkeep;
@@ -70,9 +74,9 @@ static int tb_calltf(char*user_data)
 	if ( tready ) {
 		tvalid_val.value.scalar = vpi1; // 1'b1
 		tdata = tv_axis_get_next_64b(tv_s , &tkeep);
+		#ifdef DEBUG
 		vpi_printf("TB call : tdata %#lx tkeep %#x\n", tdata, tkeep);
-		//vpi_printf("Flatten finished, idx %ld, len %ld\n", tv_s->flat_idx, tv_s->flat_l);
-		//vpi_printf("TB call : data %0.16lx\n", tdata);
+		#endif
 		
 		tb_vpi_logic_put_64b(argv, tdata);	
 		tb_vpi_logic_put_8b(argv, tkeep);	
@@ -81,7 +85,6 @@ static int tb_calltf(char*user_data)
 	}
 	vpi_put_value(tvalid_h, &tvalid_val, 0, vpiNoDelay);
 	vpi_free_object(argv);
-	//vpi_printf("\nTB call : end\n");
 	return 0;
 }
 
@@ -114,7 +117,9 @@ void tb_register()
 static int tb_init_compiletf(char* path)
 {
 	tv_s = NULL;
+	#ifdef DEBUG
 	vpi_printf("TB_INIT compile\n");
+	#endif
     return 0;
 }
 
@@ -123,7 +128,9 @@ static int tb_init_compiletf(char* path)
 // source code. 
 static PLI_INT32 tb_init_calltf(char*user_data)
 {
-	//vpi_printf("TB init call: opening file \n");
+	#ifdef DEBUG
+	vpi_printf("TB init call: opening file \n");
+	#endif
 	s_vpi_value value;
 	char *path;	
 	vpiHandle sys = vpi_handle(vpiSysTfCall, 0);
@@ -139,13 +146,17 @@ static PLI_INT32 tb_init_calltf(char*user_data)
     vpi_get_value(arg, &value);
 	path = strdup(value.value.str);
 
-	//vpi_printf("TB init call: Path %s\n", path);
+	#ifdef DEBUG
+	vpi_printf("TB init call: Path %s\n", path);
+	#endif
 
 	tv_s = tv_alloc(path);
 	if ( tv_s == NULL) return 1;
 	tv_create_packet( tv_s, 1 );
 	
+	#ifdef DEBUG
 	vpi_printf("TB init call : end\n");
+	#endif
 	vpi_free_object(argv);
 	return 0;
 }
@@ -172,7 +183,9 @@ static int tb_itch_compiletf(char* path)
 
 static PLI_INT32 tb_itch_calltf(char*user_data){
 	tv_itch5_s *itch_s;
+	#ifdef DEBUG
 	vpi_printf("TB itch\n");
+	#endif
 	s_vpi_value value;
 	vpiHandle sys = vpi_handle(vpiSysTfCall, 0);
 	vpiHandle argv = vpi_iterate(vpiArgument, sys);
@@ -180,8 +193,13 @@ static PLI_INT32 tb_itch_calltf(char*user_data){
 	assert(argv);
 	itch_s = tb_itch_fifo_pop(tv_s->itch_fifo_s);
 	if ( itch_s != NULL ){
+		#ifdef DEBUG
+		print_tv_itch5(itch_s);
+		#endif
 		tb_itch_put_struct(argv, itch_s);
 		free(itch_s);
+	}else{
+		vpi_printf("TB itch : error, no itch ptr found\n");
 	}
 	vpi_free_object(argv);
 	return 0;

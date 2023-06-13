@@ -12,6 +12,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include <ctype.h>
 
 moldudp64_s * moldudp64_alloc(){
 	moldudp64_s * p = NULL;
@@ -29,6 +30,16 @@ void moldudp64_add_msg(moldudp64_s *p, void *msg_data, size_t msg_len){
 	p->msg[cnt]->len  = (uint16_t) msg_len;
 	p->msg[cnt]->data = (uint8_t*) malloc(sizeof(uint8_t)*msg_len);
 	memcpy(p->msg[cnt]->data, msg_data, msg_len * sizeof(uint8_t));
+
+	#ifdef DEBUG
+	uint8_t c;
+	printf("mold add msg, raw data :\n");
+	for(int i =(int)msg_len-1; i > -1; i--){
+		c = p->msg[cnt]->data[i];
+		printf("byte %02d %02hhx (%c)\n",i, c, isalpha(c)? c : ' ');
+	}
+	printf("\n");
+	#endif
 	
 	p->cnt+=1;
 }
@@ -54,12 +65,24 @@ size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat){
 	uint16_t cnt_be;
 	uint16_t len_be;	
 	size_t s = offsetof(moldudp64_s, msg);
+	#ifdef DEBUG
+	printf("offset size %d\n", s);
+	#endif
 	// count size
 	for ( c = 0; c < p->cnt; c++){
-		s += sizeof(uint16_t) + p->msg[c]->len;	
+		s += sizeof(uint16_t);
+		#ifdef DEBUG
+		printf("size %d\n", s);
+		#endif
+		s += p->msg[c]->len;
+		#ifdef DEBUG
+		printf("size %d\n", s);
+		#endif	
 	}
 	assert(s > 0 );
-	printf("mold flaten cnt %d msg 0 len %d ( %#x ) \n", p->cnt, p->msg[0]->len,p->msg[0]->len );
+	#ifdef DEBUG
+	printf("mold flaten cnt %d msg 0 len %d , s %d \n", p->cnt, p->msg[0]->len, s );
+	#endif
 	// allocate
 	if ( *flat == NULL ){
 		*flat = ( uint8_t *) malloc( sizeof(uint8_t) * s );
@@ -76,21 +99,27 @@ size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat){
 		sid_be[l] = p->sid[h];
 	}
 	// copy memory
-	memcpy(*flat+s, sid_be, sizeof(sid_be));
+	memcpy(*flat+s, sid_be, sizeof(uint8_t)*10);
 	s += sizeof(sid_be);
 	seq_be =htobe64( p->seq ); 
-	memcpy(*flat+s, &seq_be, sizeof(uint64_t));
+	memcpy(*flat+s, &seq_be, sizeof(uint8_t)*8);
 	s+= sizeof(seq_be);
 	cnt_be =htobe16( p->cnt );
-	memcpy(*flat+s, &cnt_be, sizeof(uint16_t));
+	memcpy(*flat+s, &cnt_be, sizeof(uint8_t)*2);
 	s += sizeof(cnt_be);
 	//printf("cnt le %#x be %#x\n", p->cnt, cnt_be); 	
 	for( c = 0; c < p->cnt; c++ ){
 		len_be = htobe16(p->msg[c]->len);
-		memcpy(*flat+s, &len_be, sizeof(uint16_t));
+		memcpy(*flat+s, &len_be, sizeof(uint8_t)*2);
 		s += sizeof(len_be);
+		#ifdef DEBUG
+		printf("size %d\n", s);
+		#endif	
 		memcpy(*flat+s, p->msg[c]->data, sizeof(uint8_t) * p->msg[c]->len);
 		s+= p->msg[c]->len;
+		#ifdef DEBUG
+		printf("size %d\n", s);
+		#endif	
 	}
 	return s;
 }

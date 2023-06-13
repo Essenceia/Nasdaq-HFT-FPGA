@@ -27,7 +27,7 @@ void tb_vpi_logic_put_32b(vpiHandle argv, uint32_t var){
 	assert(h);
 	v.format = vpiVectorVal;
 	v.value.vector = calloc(1, sizeof(s_vpi_vecval));
-	v.value.vector[0].aval = var;
+	v.value.vector[0].aval = (PLI_INT32)var;
 	v.value.vector[0].bval = 0;
 	vpi_put_value(h, &v, 0, vpiNoDelay);
 	free(v.value.vector);	
@@ -40,27 +40,32 @@ void tb_vpi_logic_put_64b(vpiHandle argv, uint64_t var){
 	assert(h);
 	v.format = vpiVectorVal;
 	v.value.vector = calloc(2, sizeof(s_vpi_vecval));
-	v.value.vector[0].aval =(uint32_t) var; //32 lsb 
+	v.value.vector[0].aval =(PLI_INT32) var; //32 lsb 
 	v.value.vector[0].bval = 0;
-	v.value.vector[1].aval =(uint32_t) ( var >> 32 ); //32 msb 
+	v.value.vector[1].aval =(PLI_INT32) ( var >> 32 ); //32 msb 
 	v.value.vector[1].bval = 0;
 	vpi_put_value(h, &v, 0, vpiNoDelay);	
 	free(v.value.vector);	
 }
 
-void tb_vpi_logic_put_48b(vpiHandle argv, uint64_t var){
+void tb_vpi_logic_put_48b(vpiHandle argv, uint8_t var[6]){
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
 	assert(h);
+	uint64_t var64 = 0;
 	v.format = vpiVectorVal;
 	v.value.vector = calloc(2, sizeof(s_vpi_vecval));
+	// convert 8b array to 64b variable for ease of use 
+	for( int i=0; i < 6; i++){
+		var64 |= (uint64_t)var[i] << i*8; 
+	}
 	/* bit encoding: ab: 00=0, 10=1, 11=X, 01=Z 
  	*  set 16 msb to X, keep only 48 lsb */
-	v.value.vector[0].aval =(uint32_t) var; //32 lsb 
+	v.value.vector[0].aval =(PLI_INT32) var64; //32 lsb 
 	v.value.vector[0].bval = 0;
-	v.value.vector[1].aval =(uint32_t) 0xffff0000 | ( var >> 32 ); //32 msb 
-	v.value.vector[1].bval = 0xffff0000;
+	v.value.vector[1].aval =(PLI_INT32) ( 0xffff0000 | ( var64 >> 32 )); //32 msb
+	v.value.vector[1].bval =(PLI_INT32)  0xffff0000;
 	vpi_put_value(h, &v, 0, vpiNoDelay);	
 	free(v.value.vector);	
 }
@@ -75,13 +80,13 @@ void _tb_vpi_logic_put_8b_var_arr(vpiHandle argv, uint8_t *arr, size_t len){
 	w_cnt = ( len + 31 ) % 32;// round to supperior
 	v.format = vpiVectorVal;
 	v.value.vector = calloc(2, sizeof(s_vpi_vecval)*w_cnt);
-	for (int i = 0; i < w_cnt * 4 ; i++){
+	for (size_t i = 0; i < w_cnt * 4 ; i++){
 		if ( i < len ){
-			v.value.vector[i/4].aval |= ((uint32_t)arr[i]) << i%4;	
-			v.value.vector[i/4].bval |= ((uint32_t)0x00  ) << i%4;	
+			v.value.vector[i/4].aval |= ((PLI_INT32)arr[i]) << i%4;	
+			v.value.vector[i/4].bval |= ((PLI_INT32)0x00  ) << i%4;	
 		}else{
-			v.value.vector[i/4].aval |= ((uint32_t)0xff) << i%4;	
-			v.value.vector[i/4].bval |= ((uint32_t)0xff) << i%4;	
+			v.value.vector[i/4].aval |= ((PLI_INT32)0xff) << i%4;	
+			v.value.vector[i/4].bval |= ((PLI_INT32)0xff) << i%4;	
 		}
 	}
 	vpi_put_value(h, &v, 0, vpiNoDelay);	

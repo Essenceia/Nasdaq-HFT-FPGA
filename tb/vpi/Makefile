@@ -30,7 +30,7 @@ tb_itch.o: tb_itch.c tb_itch.h
 	$(CC) -I$(INC) -I$(IVERILOG) -c tb_itch.c $(FLAGS)
   
 tb.vpi: tb.o tb_utils.o tb_itch.o tv.o moldudp64.o axis.o libitch.a
-	$(LD) -shared -o tb.vpi tb.o  tv.o axis.o moldudp64.o tb_itch.o tb_utils.o $(LIB) -lvpi
+	$(LD) -shared -o tb.vpi tb.o  tv.o axis.o moldudp64.o tb_utils.o tb_itch.o $(LIB) -lvpi
 
 clean:
 	rm -f test	

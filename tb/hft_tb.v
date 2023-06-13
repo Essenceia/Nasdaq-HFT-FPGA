@@ -469,7 +469,7 @@ logic [7:0]  tb_keep;
 task vpi_task;
 begin
 	integer i;
-	for(i=0; i < 10; i++ ) begin
+	for(i=0; i < 500; i++ ) begin
 		#10	
 		tb_ready = udp_axis_tready_o;
 		$tb(tb_ready, tb_valid, tb_data, tb_keep);
@@ -480,7 +480,9 @@ begin
 		udp_axis_tlast_i  = ~( tb_keep == 8'hff);
 		if ( udp_axis_tlast_i == 1'b1 ) begin
 			// TODO remove : back to back bug
-			#30
+			#10
+			udp_axis_tvalid_i = 1'b0;
+			#20
 			udp_axis_tvalid_i = 1'b0;
 			
 		end
@@ -1086,13 +1088,13 @@ always @(posedge itch_msg_v_sent) begin
 	assert( ~tb_itch_order_delete_v | tb_itch_order_delete_v & tb_itch_order_delete_order_reference_number == itch_order_delete_order_reference_number);
 	
 	assert( tb_itch_order_replace_v == itch_order_replace_v);
-	assert( tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_stock_locate == itch_order_replace_stock_locate);
-	assert( tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_tracking_number == itch_order_replace_tracking_number);
-	assert( tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_timestamp == itch_order_replace_timestamp);
-	assert( tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_original_order_reference_number == itch_order_replace_original_order_reference_number);
-	assert( tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_new_order_reference_number == itch_order_replace_new_order_reference_number);
-	assert( tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_shares == itch_order_replace_shares);
-	assert( tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_price == itch_order_replace_price);
+	assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_stock_locate == itch_order_replace_stock_locate);
+	assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_tracking_number == itch_order_replace_tracking_number);
+	assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_timestamp == itch_order_replace_timestamp);
+	assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_original_order_reference_number == itch_order_replace_original_order_reference_number);
+	assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_new_order_reference_number == itch_order_replace_new_order_reference_number);
+	assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_shares == itch_order_replace_shares);
+	assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_price == itch_order_replace_price);
 	
 	assert( tb_itch_trade_v == itch_trade_v);
 	assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_stock_locate == itch_trade_stock_locate);

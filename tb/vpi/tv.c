@@ -51,11 +51,15 @@ void tv_create_packet(tv_t * t, size_t itch_n){
 
 uint64_t tv_axis_get_next_64b(tv_t* t, uint8_t *tkeep){
 	uint64_t tdata;
-	tdata = axis_get_next_64b(t->flat, &t->flat_idx , t->flat_l, tkeep);
-	if ( *tkeep != 0xFF ){
-		// read new itch message for next round
+
+	if ( axis_msg_finished(&t->flat_idx, t->flat_l ) ){
+		#ifdef DEBUG
+		printf("Axis message finished, creating new message\n");
+		#endif
 		tv_create_packet( t, 1 );
+
 	}
+	tdata = axis_get_next_64b(t->flat, &t->flat_idx , t->flat_l, tkeep);
 	return tdata;	
 }
 
