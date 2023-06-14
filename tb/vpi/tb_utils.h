@@ -29,7 +29,7 @@ void _tb_vpi_put_logic_char_var_arr(vpiHandle argv, char_t *arr, size_t len);
  static inline void tb_vpi_put_logic_char_##X##_t(vpiHandle argv, char_t *arr){ \
 	_tb_vpi_put_logic_char_var_arr( argv, arr, X ); \
 }
-static inline void tb_vpi_put_logic_put_char_t(vpiHandle argc, char_t var){
+static inline void tb_vpi_put_logic_char_t(vpiHandle argc, char_t var){
 	tb_vpi_put_logic_u8_t(argc, (u8_t) var);
  }
 TB_UTILS_PUT_CHAR_ARR(2)
@@ -39,11 +39,11 @@ TB_UTILS_PUT_CHAR_ARR(10)
 TB_UTILS_PUT_CHAR_ARR(20)
 
 
-static inline void tb_vpi_put_logic_put_price_4_t(vpiHandle argc, price_4_t var){
+static inline void tb_vpi_put_logic_price_4_t(vpiHandle argc, price_4_t var){
 	tb_vpi_put_logic_u32_t(argc,(u32_t) var);
  }
 
-static inline void tb_vpi_put_logic_put_price_8_t(vpiHandle argc, price_8_t var){
+static inline void tb_vpi_put_logic_price_8_t(vpiHandle argc, price_8_t var){
 	tb_vpi_put_logic_u64_t(argc,(u64_t) var);
  }
 
