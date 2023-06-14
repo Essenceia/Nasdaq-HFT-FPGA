@@ -28,5 +28,7 @@ void tv_create_packet(tv_t * t,size_t itch_n);
 
 uint64_t tv_axis_get_next_64b(tv_t* t, uint8_t *mask);
 
+bool tv_axis_has_data(tv_t *t);
+
 void tv_free(tv_t * t);
 #endif // TV_H

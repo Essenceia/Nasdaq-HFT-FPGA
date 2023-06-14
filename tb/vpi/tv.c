@@ -37,13 +37,22 @@ void tv_create_packet(tv_t * t, size_t itch_n){
 	// read itch messages from file
 	for( n = 0; n < itch_n ; n++){
 		r = get_next_bin_msg(t->fptr, buff, ITCH_MSG_MAX_LEN);
-		if ( r == 0 )break;
+		if ( r ==  0 ){
+			printf("No new message to read\n");
+			break;
+		}
 		// add it's contents to mold struct
 		moldudp64_add_msg(t->mold_s, buff, r);
 		tb_itch_fifo_push(t->itch_fifo_s, tb_itch_create_struct(buff, r)); 
 	}
-	r =	moldudp64_flatten(t->mold_s, &t->flat);
-	assert(t->flat);
+	if( t->mold_s->cnt > 0 ){
+		r =	moldudp64_flatten(t->mold_s, &t->flat);
+		assert(t->flat);
+	}else{
+		printf("No mold message to put into packet \n");
+		t->flat = NULL;
+		r = 0;
+	}
 	t->flat_l = r;
 	t->flat_idx = 0;
 	moldudp64_clear( t-> mold_s );
@@ -59,8 +68,22 @@ uint64_t tv_axis_get_next_64b(tv_t* t, uint8_t *tkeep){
 		tv_create_packet( t, 1 );
 
 	}
-	tdata = axis_get_next_64b(t->flat, &t->flat_idx , t->flat_l, tkeep);
+	if(t->flat != NULL ) tdata = axis_get_next_64b(t->flat, &t->flat_idx , t->flat_l, tkeep);
 	return tdata;	
+}
+bool tv_axis_has_data(tv_t* t){
+	bool has_data;
+	int  eof;
+	bool msg_finished;
+	bool flat_null; // the last entry in the bin file was invalid, eg : eof size 0 
+	eof = feof(t->fptr);
+	msg_finished = axis_msg_finished(&t->flat_idx, t->flat_l ); 
+	flat_null = t->flat == NULL;
+	has_data = !( (eof && msg_finished) || flat_null );
+	if ( !has_data )
+		 printf("TB : No more data to send to axis, end of file %d, axis msg finished %d flat null %d\n",
+		 eof, msg_finished, flat_null);
+	return has_data;
 }
 
 void tv_free(tv_t * t)

@@ -46,11 +46,10 @@ static int tb_calltf(char*user_data)
 	assert(tv_s);
 
 	int tready;	
-	uint8_t  tkeep;
-	uint64_t tdata, mask64;
-	uint32_t v;
-	s_vpi_value tready_val, tvalid_val, tdata_val, tkeep_val;
-	vpiHandle tready_h, tvalid_h, tdata_h, tkeep_h;
+	uint8_t  tkeep = 0, tb_finished = 0;
+	uint64_t tdata = 0;
+	s_vpi_value tready_val, tvalid_val;
+	vpiHandle tready_h, tvalid_h;
 	vpiHandle sys;
 	vpiHandle argv;
 	
@@ -73,31 +72,29 @@ static int tb_calltf(char*user_data)
 	tvalid_val.format = vpiScalarVal;
 	// check tready, if true prepare to send next axis payload
 	if ( tready ) {
+		if ( tv_axis_has_data(tv_s)){
 		tvalid_val.value.scalar = vpi1; // 1'b1
 		tdata = tv_axis_get_next_64b(tv_s , &tkeep);
 		#ifdef DEBUG
 		vpi_printf("TB call : tdata %#lx tkeep %#x\n", tdata, tkeep);
 		#endif
-		
-		tb_vpi_put_logic_u64_t(argv, tdata);	
-		tb_vpi_put_logic_u8_t(argv, tkeep);	
+		if( tv_s->flat == NULL ){
+			tb_finished = 1;
+		}	
+		}else{
+			tvalid_val.value.scalar = vpi0;
+			tb_finished = 1;
+		}
 	}else{
 		tvalid_val.value.scalar = vpi0;// write 1'b0
 	}
 	vpi_put_value(tvalid_h, &tvalid_val, 0, vpiNoDelay);
+	tb_vpi_put_logic_u64_t(argv, tdata);	
+	tb_vpi_put_logic_u8_t(argv, tkeep);
+	tb_vpi_put_logic_u8_t(argv, tb_finished);	
 	vpi_free_object(argv);
 	return 0;
 }
-
-// returns how many bits wide our vpi return value shall be
-static PLI_INT32 tb_sizetf(char*x)
-{
-	// tvalid : 1
-	// tkeep : 8
-	// tdata : 64
-    return AXI_TDATA_W + AXI_TKEEP_W + AXI_TDATA_W;
-}
-
 void tb_register()
 {
       s_vpi_systf_data tf_data;
@@ -187,21 +184,27 @@ static PLI_INT32 tb_itch_calltf(char*user_data){
 	#ifdef DEBUG
 	vpi_printf("TB itch\n");
 	#endif
-	s_vpi_value value;
 	vpiHandle sys = vpi_handle(vpiSysTfCall, 0);
 	vpiHandle argv = vpi_iterate(vpiArgument, sys);
-	vpiHandle arg;
 	assert(argv);
+
+	
 	itch_s = tb_itch_fifo_pop(tv_s->itch_fifo_s);
 	if ( itch_s != NULL ){
+		// test is not finished
+		tb_vpi_put_logic_u8_t(argv, 0);
 		#ifdef DEBUG
 		print_tv_itch5(itch_s);
 		#endif
-		tb_itch_put_struct(argv, itch_s);
-		free(itch_s);
 	}else{
-		vpi_printf("TB itch : error, no itch ptr found\n");
+		// test finished, set all expected itch logic signals to 0
+		itch_s = calloc(1, sizeof(tv_itch5_s));
+		vpi_printf("TB itch : no itch ptr found, test finished\n");
+		tb_vpi_put_logic_u8_t(argv, 1);
+		
 	}
+	tb_itch_put_struct(argv, itch_s);
+	free(itch_s);
 	vpi_free_object(argv);
 	return 0;
 }
