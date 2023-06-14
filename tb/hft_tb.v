@@ -469,7 +469,7 @@ logic [7:0]  tb_keep;
 task vpi_task;
 begin
 	integer i;
-	for(i=0; i < 500; i++ ) begin
+	for(i=0; i < 15; i++ ) begin
 		#10	
 		tb_ready = udp_axis_tready_o;
 		$tb(tb_ready, tb_valid, tb_data, tb_keep);

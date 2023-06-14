@@ -11,7 +11,7 @@
 /* Note : Eventhough calloc set bits to 0 we are still manually
  * writing bval's to 0 for clarity */
 
-void tb_vpi_logic_put_1b(vpiHandle argv, uint8_t var){
+void tb_vpi_put_logic_u8_t(vpiHandle argv, u8_t var){
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
@@ -20,7 +20,7 @@ void tb_vpi_logic_put_1b(vpiHandle argv, uint8_t var){
 	v.value.scalar = var ? vpi1 : vpi0;
 	vpi_put_value(h, &v, 0, vpiNoDelay);
 }
-void tb_vpi_logic_put_32b(vpiHandle argv, uint32_t var){
+void tb_vpi_put_logic_u32_t(vpiHandle argv, u32_t var){
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
@@ -33,7 +33,7 @@ void tb_vpi_logic_put_32b(vpiHandle argv, uint32_t var){
 	free(v.value.vector);	
 }
 
-void tb_vpi_logic_put_64b(vpiHandle argv, uint64_t var){
+void tb_vpi_put_logic_u64_t(vpiHandle argv, u64_t var){
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
@@ -48,17 +48,17 @@ void tb_vpi_logic_put_64b(vpiHandle argv, uint64_t var){
 	free(v.value.vector);	
 }
 
-void tb_vpi_logic_put_48b(vpiHandle argv, uint8_t var[6]){
+void tb_vpi_put_logic_u48_t(vpiHandle argv, u48_t var){
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
 	assert(h);
-	uint64_t var64 = 0;
+	u64_t var64 = 0;
 	v.format = vpiVectorVal;
 	v.value.vector = calloc(2, sizeof(s_vpi_vecval));
 	// convert 8b array to 64b variable for ease of use 
 	for( int i=0; i < 6; i++){
-		var64 |= (uint64_t)var[i] << i*8; 
+		var64 |= (u64_t)var[i] << i*8; 
 	}
 	/* bit encoding: ab: 00=0, 10=1, 11=X, 01=Z 
  	*  set 16 msb to X, keep only 48 lsb */
@@ -71,13 +71,13 @@ void tb_vpi_logic_put_48b(vpiHandle argv, uint8_t var[6]){
 }
 
 
-void _tb_vpi_logic_put_8b_var_arr(vpiHandle argv, uint8_t *arr, size_t len){
+void _tb_vpi_put_logic_char_var_arr(vpiHandle argv, char_t *arr, size_t len){
 	size_t w_cnt; // word count, vpi vector val elems are only of 32b wide each
 	vpiHandle h;
 	s_vpi_value v;
 	h = vpi_scan(argv);
 	assert(h);
-	w_cnt = ( len + 31 ) % 32;// round to supperior
+	w_cnt = ( (len*8) + 31 ) % 32;// round to supperior
 	v.format = vpiVectorVal;
 	v.value.vector = calloc(2, sizeof(s_vpi_vecval)*w_cnt);
 	for (size_t i = 0; i < w_cnt * 4 ; i++){

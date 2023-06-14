@@ -21,7 +21,7 @@ tv.o: tv.c tv.h
 	$(CC) -I$(INC) -I$(IVERILOG) -c tv.c $(FLAGS)
 
 tb_utils.o: tb_utils.c tb_utils.h
-	$(CC) -I$(IVERILOG) -c tb_utils.c $(FLAGS)
+	$(CC) -I$(INC) -I$(IVERILOG) -c tb_utils.c $(FLAGS)
 
 tb.o: tb.c tb.h
 	$(CC) -I$(INC) -I$(IVERILOG) -c tb.c $(FLAGS)

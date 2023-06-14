@@ -44,8 +44,9 @@ static int tb_calltf(char*user_data)
    	vpi_printf("TB call\n");
 	#endif
 	assert(tv_s);
-	
-	uint8_t  tready, tvalid, tkeep;
+
+	int tready;	
+	uint8_t  tkeep;
 	uint64_t tdata, mask64;
 	uint32_t v;
 	s_vpi_value tready_val, tvalid_val, tdata_val, tkeep_val;
@@ -78,8 +79,8 @@ static int tb_calltf(char*user_data)
 		vpi_printf("TB call : tdata %#lx tkeep %#x\n", tdata, tkeep);
 		#endif
 		
-		tb_vpi_logic_put_64b(argv, tdata);	
-		tb_vpi_logic_put_8b(argv, tkeep);	
+		tb_vpi_put_logic_u64_t(argv, tdata);	
+		tb_vpi_put_logic_u8_t(argv, tkeep);	
 	}else{
 		tvalid_val.value.scalar = vpi0;// write 1'b0
 	}
