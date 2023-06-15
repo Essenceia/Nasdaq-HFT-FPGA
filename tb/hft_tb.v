@@ -504,12 +504,6 @@ begin
 end
 endtask
 
-//always @(posedge tb_finished) begin
-//// end test bench
-//	$display("End of test condition hit");
-//	$tb_end();
-//	$finished;
-//end
 
 initial
 begin
@@ -531,9 +525,8 @@ begin
 	#10
 	vpi_task();
 	#10
-	$tb_end();
 	$display("Test end");
-	$finish;
+	end_tb(1);
 end
  /* Make a regular pulsing clock. */
 always #5 clk = !clk;
