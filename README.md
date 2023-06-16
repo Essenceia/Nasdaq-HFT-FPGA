@@ -56,7 +56,7 @@ For additional information read the [README.md](tb/README.md) in the `tb` folder
 
 ### Tools
 
-Since the nasdaq provided binary file are a dump of itch broadcast messages we 
+Since the nasdaq provided binary file is a dump of itch broadcast messages we 
 have long sequences of messages with low variety, such as on startup with a lot of 
 `stock event` messages and `stock directy` messages.
 

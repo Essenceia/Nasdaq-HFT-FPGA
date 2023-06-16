@@ -43,5 +43,9 @@ size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat);
 void moldudp64_set_ids(moldudp64_s* p,const uint8_t sid[10],const uint64_t seq);
 
 void moldudp64_print(const moldudp64_s *p);
+// get the session id and sequence number for a given message 
+void moldudp64_get_ids(moldudp64_s *p,uint16_t msg_cnt_offset,uint8_t *sid[10],uint64_t *seq); 
+
+void moldudp64_get_debug_id(const uint8_t sid[10], const uint64_t seq, uint8_t debug_id[18]);
 #endif // MOLDUDP64_H
 

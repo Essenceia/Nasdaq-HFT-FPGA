@@ -16,6 +16,7 @@ tv_t * tv_alloc(const char *path){
 	assert(tv);
 	tv->mold_s   = moldudp64_alloc();
 	assert(tv->mold_s);
+	moldudp64_set_ids(tv->mold_s,((uint8_t [])MOLD_INIT_SID ), MOLD_INIT_SEQ); 
 	tv->flat_l   = 0; 
 	tv->flat_idx = 0;
 	tv->fptr = fopen( path, "rb");
@@ -29,11 +30,7 @@ void tv_create_packet(tv_t * t, size_t itch_n){
 	size_t r = 0; // read size
 	size_t n; // number of messages read
 	uint8_t buff[ITCH_MSG_MAX_LEN];		
-	uint8_t sid[10] = { 'a', 0xdd, 0xcc, 0xbb, 0xaa,
-					    0x99, 0x88, 0x77, 0x66, 0x55 };// 0:9
-	uint64_t seq = 0xDEADBEAF0000AAAA;
-
-	moldudp64_set_ids(t->mold_s, sid, seq); 
+	uint8_t tmp_debug_id[18];
 	// read itch messages from file
 	for( n = 0; n < itch_n ; n++){
 		r = get_next_bin_msg(t->fptr, buff, ITCH_MSG_MAX_LEN);
@@ -43,7 +40,9 @@ void tv_create_packet(tv_t * t, size_t itch_n){
 		}
 		// add it's contents to mold struct
 		moldudp64_add_msg(t->mold_s, buff, r);
-		tb_itch_fifo_push(t->itch_fifo_s, tb_itch_create_struct(buff, r)); 
+		// create itch structure with debug id
+		moldudp64_get_debug_id(t->mold_s->sid, t->mold_s->seq, tmp_debug_id);
+		tb_itch_fifo_push(t->itch_fifo_s, tb_itch_create_struct(buff, r), tmp_debug_id); 
 	}
 	if( t->mold_s->cnt > 0 ){
 		r =	moldudp64_flatten(t->mold_s, &t->flat);

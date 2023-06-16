@@ -7,7 +7,7 @@ VPI_DIR=$(TB_DIR)/vpi
 BUILD=build
 CONF=conf
 FLAGS=-Wall -g2012 -gassertions -gstrict-expr-width
-DEFINES=-DMISS_DET -DHEARTBEAT -DMOLD_MSG_IDS $(if $(debug), -DDEBUG)
+DEFINES=-DMISS_DET -DHEARTBEAT -DMOLD_MSG_IDS -DDEBUG_ID $(if $(debug), -DDEBUG)
 DEBUG_FLAG=$(if $(debug), debug=1)
 WAVE_FILE=wave.vcd
 WAVE_CONF=wave.conf
@@ -27,7 +27,7 @@ run: test vpi
 vpi:
 	cd $(VPI_DIR) && $(MAKE) tb.vpi $(DEBUG_FLAG) 
 
-wave : run
+wave :
 	$(VIEW) $(BUILD)/$(WAVE_FILE) $(CONF)/$(WAVE_CONF)
 
 valgrind: test vpi

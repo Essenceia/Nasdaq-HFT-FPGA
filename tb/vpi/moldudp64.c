@@ -24,6 +24,7 @@ moldudp64_s * moldudp64_alloc(){
 void moldudp64_add_msg(moldudp64_s *p, void *msg_data, size_t msg_len){
 	uint16_t cnt = p->cnt;
 	assert( cnt < MOLDUDP64_MSG_CNT_MAX );
+	assert(msg_len);
 
 	// resize msg, add 1
 	p->msg[cnt] = (moldudp64_msg_s*) malloc(sizeof(moldudp64_msg_s)); 
@@ -50,6 +51,8 @@ void moldudp64_clear(moldudp64_s *p){
 		free(p->msg[i]->data);
 		free(p->msg[i]);
 	}
+	// update seq
+	assert(!__builtin_uaddl_overflow(p->seq, (uint64_t)p->cnt, &p->seq )); 
 	p->cnt = 0;
 }
 void moldudp64_free(moldudp64_s *p){
@@ -75,11 +78,12 @@ size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat){
 		printf("size %d\n", s);
 		#endif
 		s += p->msg[c]->len;
+		assert(p->msg[c]->len);
 		#ifdef DEBUG
 		printf("size %d\n", s);
 		#endif	
 	}
-	assert(s > 0 );
+	assert(s);
 	#ifdef DEBUG
 	printf("mold flaten cnt %d msg 0 len %d , s %d \n", p->cnt, p->msg[0]->len, s );
 	#endif
@@ -90,7 +94,6 @@ size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat){
 		*flat = realloc(*flat, sizeof(uint8_t) * s);
 	}
 	assert(*flat);
-	assert(s);
 	// reset offset
 	s = 0;
 	// switch from default endian to big endian 
@@ -144,4 +147,18 @@ void moldudp64_print(const moldudp64_s *p){
 	printf("\n");
 }
 
+void moldudp64_get_ids(moldudp64_s *p, uint16_t msg_cnt_offset, uint8_t *sid[10], uint64_t *seq){
+	assert(p);
+	assert(sid);
+	assert(seq);
+	// no overflow - should have sent an end of session, updated sid and 
+	// reset seq to 0 before we hit and overflow
+	assert(!__builtin_uaddl_overflow(p->seq, (uint64_t) msg_cnt_offset, &seq )); 
+	memcpy(*sid, p->sid, sizeof(uint8_t)*10);
+}
+void moldudp64_get_debug_id(const uint8_t sid[10], const uint64_t seq, uint8_t debug_id[18]){
+	// debug id formal { sid , seq } ( little endian )
+	memcpy(debug_id, &seq, sizeof(uint64_t));
+	memcpy(debug_id+sizeof(uint64_t), sid, sizeof(uint8_t)*10);
+}
 

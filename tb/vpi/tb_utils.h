@@ -38,6 +38,8 @@ TB_UTILS_PUT_CHAR_ARR(8)
 TB_UTILS_PUT_CHAR_ARR(10)
 TB_UTILS_PUT_CHAR_ARR(20)
 
+// debug id
+TB_UTILS_PUT_CHAR_ARR(18)
 
 static inline void tb_vpi_put_logic_price_4_t(vpiHandle argc, price_4_t var){
 	tb_vpi_put_logic_u32_t(argc,(u32_t) var);

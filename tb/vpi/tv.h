@@ -11,8 +11,11 @@
 
 #include "moldudp64.h"
 #include "tb_itch.h"
-
 #include <stdio.h>
+
+#define MOLD_INIT_SID { 'a', 0xdd, 0xcc, 0xbb, 0xaa, 0x99, 0x88, 0x77, 0x66, 0x55 }
+#define MOLD_INIT_SEQ 0xDEADBEAF0000AAAA 
+
 typedef struct{
 	FILE *           fptr;
 	moldudp64_s     *mold_s;

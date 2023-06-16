@@ -6,6 +6,7 @@
 /* Itch structre fifo, simply linked list */
 typedef struct{
 	void        *n;// next element 
+	uint8_t     debug_id[18];
 	tv_itch5_s  *d;
 }tv_itch5_fifo_elem_t;
 
@@ -15,9 +16,10 @@ typedef struct{
 }tv_itch5_fifo_t;
 
 tv_itch5_fifo_t * tb_itch_fifo_alloc();
-void tb_itch_fifo_push(tv_itch5_fifo_t *fifo, tv_itch5_s *new);
+void tb_itch_fifo_push(tv_itch5_fifo_t *fifo, tv_itch5_s *new, uint8_t debug_id[18]);
 // if empty return null ptr
-tv_itch5_s* tb_itch_fifo_pop(tv_itch5_fifo_t *fifo);
+tv_itch5_s* tb_itch_fifo_pop(tv_itch5_fifo_t *fifo, uint8_t debug_id[18]);
+
 void tb_itch_fifo_free(tv_itch5_fifo_t *fifo);
 
 void tb_itch_put_struct(vpiHandle argv, tv_itch5_s *itch_s);

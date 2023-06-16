@@ -181,6 +181,7 @@ static int tb_itch_compiletf(char* path)
 
 static PLI_INT32 tb_itch_calltf(char*user_data){
 	tv_itch5_s *itch_s;
+	uint8_t     debug_id[18];
 	#ifdef DEBUG
 	vpi_printf("TB itch\n");
 	#endif
@@ -189,13 +190,18 @@ static PLI_INT32 tb_itch_calltf(char*user_data){
 	assert(argv);
 
 	
-	itch_s = tb_itch_fifo_pop(tv_s->itch_fifo_s);
+	itch_s = tb_itch_fifo_pop(tv_s->itch_fifo_s, debug_id);
+	assert(itch_s);
 	if ( itch_s != NULL ){
 		// test is not finished
 		tb_vpi_put_logic_u8_t(argv, 0);
 		#ifdef DEBUG
 		print_tv_itch5(itch_s);
 		#endif
+		// put debug id
+		tb_vpi_put_logic_char_18_t(argv,(char_t*) debug_id);
+		tb_itch_put_struct(argv, itch_s);
+		free(itch_s);
 	}else{
 		// test finished, set all expected itch logic signals to 0
 		itch_s = calloc(1, sizeof(tv_itch5_s));
@@ -203,8 +209,6 @@ static PLI_INT32 tb_itch_calltf(char*user_data){
 		tb_vpi_put_logic_u8_t(argv, 1);
 		
 	}
-	tb_itch_put_struct(argv, itch_s);
-	free(itch_s);
 	vpi_free_object(argv);
 	return 0;
 }

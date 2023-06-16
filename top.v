@@ -11,7 +11,7 @@ module hft #(
 	parameter AXI_KEEP_W  = 8,
 	parameter SID_W       = 80,
 	parameter SEQ_NUM_W   = 64,
-	`ifdef DEBUG
+	`ifdef DEBUG_ID
 	parameter DEBUG_ID_W  = SID_W + SEQ_NUM_W,
 	`endif
 	parameter ML_W        = 16, // Mold length field width in bits
@@ -49,7 +49,7 @@ logic [AXI_DATA_W-1:0] mold_itch_msg_data;
 logic [SID_W-1:0]      mold_msg_sid;
 logic [SEQ_NUM_W-1:0]  mold_msg_seq;
 `endif
-`ifdef DEBUG
+`ifdef DEBUG_ID
 logic [DEBUG_ID_W-1:0] mold_itch_msg_debug_id;
 `endif
 
@@ -58,7 +58,7 @@ logic [DEBUG_ID_W-1:0] mold_itch_msg_debug_id;
 logic [SID_W-1:0]     itch_msg_sid;
 logic [SEQ_NUM_W-1:0] itch_msg_seq_num;
 `endif
-`ifdef DEBUG
+`ifdef DEBUG_ID
 logic [DEBUG_ID_W-1:0] itch_debug_id;
 `endif
 
@@ -265,6 +265,9 @@ logic [1*LEN-1:0] itch_retail_price_improvement_indicator_interest_flag;
 
 // mold
 moldudp64 #(
+`ifdef DEBUG_ID
+	.DEBUG_ID_W(DEBUG_ID_W),
+`endif
 	.AXI_DATA_W(AXI_DATA_W),
 	.AXI_KEEP_W(AXI_KEEP_W),
 	.SID_W(SID_W),
@@ -287,8 +290,8 @@ moldudp64 #(
 	.mold_msg_seq_num_o(mold_msg_seq ),
 	`endif
 
-	`ifdef DEBUG
-	.mold_debug_id_o (mold_itch_msg_debug_id),
+	`ifdef DEBUG_ID
+	.mold_msg_debug_id_o (mold_itch_msg_debug_id),
 	`endif
 	
 	.mold_msg_v_o    (mold_itch_msg_v     ),
@@ -301,6 +304,9 @@ tv_itch5 #( .LEN(LEN),
 `ifdef MOLD_MSG_IDS
 	.SID_W(SID_W), .SEQ_NUM_W(SEQ_NUM_W),
 `endif
+`ifdef DEBUG_ID
+	.DEBUG_ID_W(DEBUG_ID_W),
+`endif
 	.AXI_DATA_W(AXI_DATA_W), .AXI_KEEP_W(AXI_KEEP_W),
 	.MSG_MAX_W(MSG_MAX_W), .CNT_MAX(CNT_MAX), .CNT_MAX_W(CNT_MAX_W) 
 )
@@ -312,7 +318,7 @@ m_itch(
 	.start_i(mold_itch_msg_start),
 	.data_i (mold_itch_msg_data),
 
-	`ifdef DEBUG
+	`ifdef DEBUG_ID
 	.debug_id_i    (mold_itch_msg_debug_id ),    
 	.debug_id_o    (itch_debug_id          ),
 	`endif

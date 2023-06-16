@@ -4,6 +4,9 @@
  * 4.0 International License. 
  * 
  * This code is provided "as is" without any express or implied warranties. */ 
+`ifndef DEBUG_ID
+`define DEBUG_ID
+`endif
 
 parameter AXI_DATA_W = 64;
 parameter AXI_KEEP_W = AXI_DATA_W/8;
@@ -15,9 +18,8 @@ parameter MH_W  = 20*LEN;// header
 parameter MSG_MAX_W = 50*LEN;
 parameter CNT_MAX   = 7;
 parameter CNT_MAX_W = $clog2(CNT_MAX);
-`ifdef DEBUG
 parameter DEBUG_ID_W = SID_W + SEQ_NUM_W;
-`endif
+
 module hft_tb;	
 reg clk = 0;
 reg nreset = 1'b0;	
@@ -40,9 +42,7 @@ logic [AXI_DATA_W-1:0] mold_msg_data_o;
 logic [SID_W-1:0]      mold_msg_sid_o;
 logic [SEQ_NUM_W-1:0]  mold_msg_seq_num_o;
 `endif
-`ifdef DEBUG
 logic [DEBUG_ID_W-1:0] mold_debug_id_o;
-`endif
 
 // ITCH
 logic itch_msg_v_sent;
@@ -53,9 +53,7 @@ logic [SID_W-1:0]     tb_itch_msg_sid;
 logic [SEQ_NUM_W-1:0] tb_itch_msg_seq_num;
 `endif
 
-`ifdef DEBUG
 logic [DEBUG_ID_W-1:0] tb_itch_debug_id;
-`endif
 
 logic tb_itch_system_event_v;
 logic [2*LEN-1:0] tb_itch_system_event_stock_locate;
@@ -266,9 +264,7 @@ logic [79:0] tb_itch_end_of_snapshot_sequence_number;
 logic [SID_W-1:0]     itch_msg_sid;
 logic [SEQ_NUM_W-1:0] itch_msg_seq_num;
 `endif
-`ifdef DEBUG
 logic [DEBUG_ID_W-1:0] itch_debug_id;
-`endif
 
 logic itch_system_event_v;
 logic [2*LEN-1:0] itch_system_event_stock_locate;
@@ -495,7 +491,7 @@ endfunction
 task vpi_task;
 begin
 	integer i;
-	for(i=0; i < 1500000; i++ ) begin
+	for(i=0; i < 10 ; i++ ) begin
 		#10	
 		tb_ready = udp_axis_tready_o;
 		$tb(tb_ready, tb_valid, tb_data, tb_keep, tb_finished);
@@ -569,9 +565,7 @@ assign udp_axis_tready_o = m_hft.mold_udp_axis_tready;
 assign mold_msg_sid_o    = m_hft.mold_msg_sid;    
 assign mold_msg_seq_num_o= m_hft.mold_msg_seq;
 `endif
-`ifdef DEBUG
 assign mold_debug_id_o  = m_hft.mold_itch_msg_debug_id;
-`endif
 
 assign mold_msg_v_o     = m_hft.mold_itch_msg_v;    
 assign mold_msg_start_o = m_hft.mold_itch_msg_start;
@@ -581,9 +575,7 @@ assign mold_msg_data_o  = m_hft.mold_itch_msg_data;
 // itch
 assign itch_msg_v_sent = m_hft.m_itch.itch_msg_sent;
 
-`ifdef DEBUG
 assign itch_debug_id  = m_hft.itch_debug_id;
-`endif
 
 assign itch_system_event_v = m_hft.itch_system_event_v;
 assign itch_system_event_stock_locate = m_hft.itch_system_event_stock_locate;
@@ -789,10 +781,8 @@ assign itch_retail_price_improvement_indicator_interest_flag = m_hft.itch_retail
 always @(posedge itch_msg_v_sent) begin
 	// asserts, match ?
 	$tb_itch(
-		`ifdef DEBUG
-		tb_itch_debug_id,
-		`endif
 		tb_finished,
+		tb_itch_debug_id,
 		tb_itch_system_event_v,
 		tb_itch_stock_directory_v,
 		tb_itch_stock_trading_action_v,
