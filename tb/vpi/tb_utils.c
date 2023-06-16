@@ -16,9 +16,12 @@ void tb_vpi_put_logic_u8_t(vpiHandle argv, u8_t var){
 	s_vpi_value v;
 	h = vpi_scan(argv);
 	assert(h);
-	v.format = vpiScalarVal;
-	v.value.scalar = var ? vpi1 : vpi0;
+	v.format = vpiVectorVal;
+	v.value.vector = calloc(1, sizeof(s_vpi_vecval));
+	v.value.vector[0].aval = 0xffffff00 | (PLI_INT32)var;
+	v.value.vector[0].bval = (PLI_INT32) 0xffffff00;
 	vpi_put_value(h, &v, 0, vpiNoDelay);
+	free(v.value.vector);	
 }
 void tb_vpi_put_logic_u32_t(vpiHandle argv, u32_t var){
 	vpiHandle h;
