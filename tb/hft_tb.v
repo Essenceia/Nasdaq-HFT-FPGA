@@ -15,7 +15,9 @@ parameter MH_W  = 20*LEN;// header
 parameter MSG_MAX_W = 50*LEN;
 parameter CNT_MAX   = 7;
 parameter CNT_MAX_W = $clog2(CNT_MAX);
-
+`ifdef DEBUG
+parameter DEBUG_ID_W = SID_W + SEQ_NUM_W;
+`endif
 module hft_tb;	
 reg clk = 0;
 reg nreset = 1'b0;	
@@ -38,13 +40,21 @@ logic [AXI_DATA_W-1:0] mold_msg_data_o;
 logic [SID_W-1:0]      mold_msg_sid_o;
 logic [SEQ_NUM_W-1:0]  mold_msg_seq_num_o;
 `endif
+`ifdef DEBUG
+logic [DEBUG_ID_W-1:0] mold_debug_id_o;
+`endif
 
 // ITCH
 logic itch_msg_v_sent;
 
+// TB output 
 `ifdef MOLD_MSG_IDS
 logic [SID_W-1:0]     tb_itch_msg_sid;
 logic [SEQ_NUM_W-1:0] tb_itch_msg_seq_num;
+`endif
+
+`ifdef DEBUG
+logic [DEBUG_ID_W-1:0] tb_itch_debug_id;
 `endif
 
 logic tb_itch_system_event_v;
@@ -255,6 +265,9 @@ logic [79:0] tb_itch_end_of_snapshot_sequence_number;
 `ifdef MOLD_MSG_IDS
 logic [SID_W-1:0]     itch_msg_sid;
 logic [SEQ_NUM_W-1:0] itch_msg_seq_num;
+`endif
+`ifdef DEBUG
+logic [DEBUG_ID_W-1:0] itch_debug_id;
 `endif
 
 logic itch_system_event_v;
@@ -553,8 +566,11 @@ assign m_hft.udp_mold_axis_tuser  = udp_axis_tuser_i;
 assign udp_axis_tready_o = m_hft.mold_udp_axis_tready;
 
 `ifdef MOLD_MSG_IDS
-assign mold_msg_sid_o    = m_hft.mold_itch_msg_sid;    
-assign mold_msg_seq_num_o= m_hft.mold_itch_msg_seq_num;
+assign mold_msg_sid_o    = m_hft.mold_msg_sid;    
+assign mold_msg_seq_num_o= m_hft.mold_msg_seq;
+`endif
+`ifdef DEBUG
+assign mold_debug_id_o  = m_hft.mold_itch_msg_debug_id;
 `endif
 
 assign mold_msg_v_o     = m_hft.mold_itch_msg_v;    
@@ -565,9 +581,8 @@ assign mold_msg_data_o  = m_hft.mold_itch_msg_data;
 // itch
 assign itch_msg_v_sent = m_hft.m_itch.itch_msg_sent;
 
-`ifdef MOLD_MSG_IDS
-assign itch_msg_sid = m_hft.itch_msg_sid;
-assign itch_msg_seq_num = m_hft.itch_msg_seq_num;
+`ifdef DEBUG
+assign itch_debug_id  = m_hft.itch_debug_id;
 `endif
 
 assign itch_system_event_v = m_hft.itch_system_event_v;
@@ -774,6 +789,9 @@ assign itch_retail_price_improvement_indicator_interest_flag = m_hft.itch_retail
 always @(posedge itch_msg_v_sent) begin
 	// asserts, match ?
 	$tb_itch(
+		`ifdef DEBUG
+		tb_itch_debug_id,
+		`endif
 		tb_finished,
 		tb_itch_system_event_v,
 		tb_itch_stock_directory_v,
