@@ -8,11 +8,18 @@
 `define DEBUG_ID
 `endif
 
+`ifdef INTERACTIVE
+/* Adding extra 10 cycles for debuging after failure detection */
 `define assert_stop( X ) \
 if (~( X )) begin \
 $display("assert failed : time %t , line %0d",$time, `__LINE__); \
+#10\
 $stop; \
 end 
+`else
+`define assert_stop( X ) \
+	assert( X )
+`endif
 
 parameter AXI_DATA_W = 64;
 parameter AXI_KEEP_W = AXI_DATA_W/8;
@@ -498,7 +505,7 @@ endfunction
 task vpi_task;
 begin
 	integer i;
-	for(i=0; i < 15 ; i++ ) begin
+	for(i=0; i < 15000000000 ; i++ ) begin
 		#10	
 		tb_ready = udp_axis_tready_o;
 		$tb(tb_ready, tb_valid, tb_data, tb_keep, tb_last, tb_finished);
@@ -523,8 +530,10 @@ endtask
 
 initial
 begin
+	`ifdef WAVE
 	$dumpfile("build/wave.vcd"); // create a VCD waveform dump called "wave.vcd"
     $dumpvars(0, hft_tb);
+	`endif
 	$display("Test start");
 	#10
 
@@ -534,7 +543,7 @@ begin
 	#10
 	tb_ready = 1'b1;
  	nreset = 1'b1;
-	t = $tb_init("/home/pitchu/rtl/hft/tb/12302019.NASDAQ_ITCH50");
+ 	t = $tb_init("/home/pitchu/rtl/hft/tb/12302019.NASDAQ_ITCH50");
 	//t = $tb_init("/home/pitchu/rtl/hft/tb/test.bin");
 	udp_axis_tuser_i = 1'b0;
 	udp_axis_tvalid_i = 1'b0;	

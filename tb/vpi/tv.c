@@ -102,8 +102,7 @@ uint64_t tv_axis_get_next_64b(
 
 	}
 	*tlast = axis_msg_last(&t->flat_idx, t->flat_l );
-	assert(t->flat!= NULL );
-	tdata = axis_get_next_64b(t->flat, &t->flat_idx , t->flat_l, tkeep);
+	if(t->flat != NULL )tdata = axis_get_next_64b(t->flat, &t->flat_idx , t->flat_l, tkeep);
 	return tdata;	
 }
 bool tv_axis_has_data(tv_t* t){

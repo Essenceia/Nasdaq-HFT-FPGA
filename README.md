@@ -37,14 +37,37 @@ Specify the location of your nasdaq itch market data dump in `tb/hft_tb.v`.
 $tb_init("<path_to_file>");
 ```
 
-Normal test run command :
+Normal test run command, no debug logs, no waves :
 ```
 make run
 ```
 
-( Optional ) Debug test run command :
+( Optional ) Arguments :
+
+- `debug=1` Add debug console logs
+
+- `wave=1` Write waves to file
+
+- `interactive=1` Stop simulator when an system verilog assert fires,
+    used for interactive debugging
+
 ``` 
-make run debug=1
+make run debug=1 wave=1
+```
+
+Open wave viewer, only available with option `wave=1` using `gtkwave` by default.
+```
+make wave
+```
+
+Run gdb on C testbench :
+```
+make gdb
+```
+
+Run valgrind on C testbench :
+```
+make valgrind
 ```
 
 Clean :
