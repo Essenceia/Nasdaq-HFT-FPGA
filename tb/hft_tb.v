@@ -972,35 +972,7 @@ always @(posedge itch_msg_v_sent) begin
 		tb_itch_end_of_snapshot_sequence_number
 	);
 	end_tb(tb_finished);
-end
-always @(
-		posedge tb_itch_system_event_v,
-		posedge tb_itch_stock_directory_v,
-		posedge tb_itch_stock_trading_action_v,
-		posedge tb_itch_reg_sho_restriction_v,
-		posedge tb_itch_market_participant_position_v,
-		posedge tb_itch_mwcb_decline_level_v,
-		posedge tb_itch_mwcb_status_v,
-		posedge tb_itch_ipo_quoting_period_update_v,
-		posedge tb_itch_luld_auction_collar_v,
-		posedge tb_itch_operational_halt_v,
-		posedge tb_itch_add_order_v,
-		posedge tb_itch_add_order_with_mpid_v,
-		posedge tb_itch_order_executed_v,
-		posedge tb_itch_order_executed_with_price_v,
-		posedge tb_itch_order_cancel_v,
-		posedge tb_itch_order_delete_v,
-		posedge tb_itch_order_replace_v,
-		posedge tb_itch_trade_v,
-		posedge tb_itch_cross_trade_v,
-		posedge tb_itch_broken_trade_v,
-		posedge tb_itch_net_order_imbalance_indicator_v,
-		posedge tb_itch_retail_price_improvement_indicator_v
-		`ifdef GLIMPS
-		,posedge tb_itch_end_of_snapshot_v
-		`endif
- ) 
-begin
+
 	if (~ tb_finished ) begin
 		// check we are comparing the correct message
 		`assert_stop( tb_itch_debug_id == itch_debug_id );

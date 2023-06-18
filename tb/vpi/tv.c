@@ -36,7 +36,7 @@ void tv_create_packet(tv_t *t, size_t itch_n) {
 	#endif
 	for(size_t msg_cnt = 0; msg_cnt < itch_n; msg_cnt++){
 
-		mlog("Reading message %ld/%ld \n\n", msg_cnt, itch_n);
+		//mlog("Reading message %ld/%ld \n\n", msg_cnt, itch_n);
 
 		/* Read an itch message. */
 		uint8_t buff[ITCH_MSG_MAX_LEN + 1];		
