@@ -16,6 +16,7 @@
 !*.h
 !*.a
 !inc
+!gen
 !inc/gen
 !Makefile
 !*.jpg
