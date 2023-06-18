@@ -25,5 +25,20 @@ static inline bool axis_msg_finished(size_t *idx, const size_t len){
 	#endif
 	return end;
 }
+
+/* Checks if next axis payload is the last of the sequence, used for tlsat */
+static inline bool axis_msg_last(size_t *idx, const size_t len){
+	bool  last;
+	size_t diff;
+	assert( len-1 > *idx );
+	
+	diff = len-1 - *idx;
+	last = diff <= 8;
+
+	#ifdef DEBUG
+	printf("Axis msg last %u diff %ld idx %ld len-1 %ld\n", last, diff, *idx, len);
+	#endif
+	return last;
+}
 #endif // AXIS_H
  

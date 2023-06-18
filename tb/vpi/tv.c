@@ -86,7 +86,12 @@ void tv_create_packet(tv_t *t, size_t itch_n) {
 	assert(t->mold_s->cnt == 0);	
 }
 
-uint64_t tv_axis_get_next_64b(tv_t* t, uint8_t *tkeep){
+uint64_t tv_axis_get_next_64b(
+	tv_t* t, 
+	uint8_t *tkeep, 
+	uint8_t *tlast
+)
+{
 	uint64_t tdata;
 	assert(t);
 	if ( axis_msg_finished(&t->flat_idx, t->flat_l ) ){
@@ -96,6 +101,7 @@ uint64_t tv_axis_get_next_64b(tv_t* t, uint8_t *tkeep){
 		tv_create_packet( t, 1 );
 
 	}
+	*tlast = axis_msg_last(&t->flat_idx, t->flat_l );
 	assert(t->flat!= NULL );
 	tdata = axis_get_next_64b(t->flat, &t->flat_idx , t->flat_l, tkeep);
 	return tdata;	

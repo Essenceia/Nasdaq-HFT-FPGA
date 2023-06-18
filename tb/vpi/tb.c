@@ -46,7 +46,7 @@ static int tb_calltf(char*user_data)
 	assert(tv_s);
 
 	int tready;	
-	uint8_t  tkeep = 0, tb_finished = 0;
+	uint8_t  tkeep = 0, tb_finished = 0, tlast = 0;
 	uint64_t tdata = 0;
 	s_vpi_value tready_val, tvalid_val;
 	vpiHandle tready_h, tvalid_h;
@@ -76,7 +76,7 @@ static int tb_calltf(char*user_data)
 	if ( tready ) {
 		if ( tv_axis_has_data(tv_s)){
 		tvalid_val.value.scalar = vpi1; // 1'b1
-		tdata = tv_axis_get_next_64b(tv_s , &tkeep);
+		tdata = tv_axis_get_next_64b(tv_s , &tkeep, &tlast);
 		#ifdef DEBUG
 		vpi_printf("TB call : tdata %#lx tkeep %#x\n", tdata, tkeep);
 		#endif
@@ -93,6 +93,7 @@ static int tb_calltf(char*user_data)
 	vpi_put_value(tvalid_h, &tvalid_val, 0, vpiNoDelay);
 	tb_vpi_put_logic_u64_t(argv, tdata);	
 	tb_vpi_put_logic_u8_t(argv, tkeep);
+	tb_vpi_put_logic_u8_t(argv, tlast);
 	tb_vpi_put_logic_u8_t(argv, tb_finished);
 	assert(argv);	
 	//vpi_free_handle(argv);

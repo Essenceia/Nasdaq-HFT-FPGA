@@ -479,6 +479,7 @@ int t;
 
 logic tb_ready;
 logic tb_valid;
+logic tb_last;
 logic [63:0] tb_data;
 logic [7:0]  tb_keep;
 
@@ -497,16 +498,16 @@ endfunction
 task vpi_task;
 begin
 	integer i;
-	for(i=0; i < 15000000 ; i++ ) begin
+	for(i=0; i < 15 ; i++ ) begin
 		#10	
 		tb_ready = udp_axis_tready_o;
-		$tb(tb_ready, tb_valid, tb_data, tb_keep, tb_finished);
+		$tb(tb_ready, tb_valid, tb_data, tb_keep, tb_last, tb_finished);
 		end_tb(tb_finished);
 		udp_axis_tvalid_i = tb_valid;
 		udp_axis_tdata_i  = tb_data;
 		udp_axis_tkeep_i  = tb_keep;
 		udp_axis_tuser_i  = 1'b0;
-		udp_axis_tlast_i  = ~( tb_keep == 8'hff);
+		udp_axis_tlast_i  = tb_last;
 		if ( udp_axis_tlast_i == 1'b1 ) begin
 			// TODO remove : back to back bug
 			#10
