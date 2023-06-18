@@ -7,3 +7,4 @@
 - Enable seq and sid for debug, help identify messages `MOLD_MSG_IDS`, check if match in tb
 - Send end of session messages for mold when sequence number for testing the
     feature and when seq gets to close to the max range of a uint64\_t
+- Launch workstation on test, laptop reached nasdaq bin file pos 317881467 
