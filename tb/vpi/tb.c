@@ -54,7 +54,9 @@ static int tb_calltf(char*user_data)
 	vpiHandle argv;
 	
 	sys = vpi_handle(vpiSysTfCall, 0);
+	assert(sys);
 	argv = vpi_iterate(vpiArgument, sys);
+	assert(argv);
 
 	// read tready	
 	tready_h = vpi_scan(argv);
@@ -91,8 +93,9 @@ static int tb_calltf(char*user_data)
 	vpi_put_value(tvalid_h, &tvalid_val, 0, vpiNoDelay);
 	tb_vpi_put_logic_u64_t(argv, tdata);	
 	tb_vpi_put_logic_u8_t(argv, tkeep);
-	tb_vpi_put_logic_u8_t(argv, tb_finished);	
-	vpi_free_object(argv);
+	tb_vpi_put_logic_u8_t(argv, tb_finished);
+	assert(argv);	
+	//vpi_free_handle(argv);
 	return 0;
 }
 void tb_register()
@@ -155,7 +158,7 @@ static PLI_INT32 tb_init_calltf(char*user_data)
 	#ifdef DEBUG
 	vpi_printf("TB init call : end\n");
 	#endif
-	vpi_free_object(argv);
+	//vpi_free_handle(argv);
 	return 0;
 }
 
@@ -191,25 +194,25 @@ static PLI_INT32 tb_itch_calltf(char*user_data){
 
 	
 	itch_s = tb_itch_fifo_pop(tv_s->itch_fifo_s, debug_id);
-	assert(itch_s);
+	//assert(itch_s);
 	if ( itch_s != NULL ){
 		// test is not finished
-		tb_vpi_put_logic_u8_t(argv, 0);
+		tb_vpi_put_logic_1b_t(argv, 0);
 		#ifdef DEBUG
 		print_tv_itch5(itch_s);
 		#endif
 		// put debug id
-		tb_vpi_put_logic_char_18_t(argv,(char_t*) debug_id);
+		tb_vpi_put_logic_char_18_t(argv,(char_t *) debug_id);
 		tb_itch_put_struct(argv, itch_s);
 		free(itch_s);
 	}else{
 		// test finished, set all expected itch logic signals to 0
 		itch_s = calloc(1, sizeof(tv_itch5_s));
-		vpi_printf("TB itch : no itch ptr found, test finished\n");
-		tb_vpi_put_logic_u8_t(argv, 1);
+		vpi_printf("ERROR - TB itch : no itch ptr found, test finished\n");
+		tb_vpi_put_logic_1b_t(argv, 1);
 		
 	}
-	vpi_free_object(argv);
+	//vpi_free_handle(argv);
 	return 0;
 }
 

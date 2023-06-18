@@ -38,7 +38,7 @@ uint64_t axis_get_next_64b(const uint8_t *flat, size_t *idx, const size_t len, u
 	*idx = nxt_idx;	
 	*mask = new_mask;
 	#ifdef DEBUG
-	printf("new idx %d new mask %02hhx mask %02hhx\n\n", *idx, new_mask,  *mask);
+	printf("new idx %ld new mask %02hhx mask %02hhx\n\n", *idx, new_mask,  *mask);
 	#endif		
 
 	return buff; 

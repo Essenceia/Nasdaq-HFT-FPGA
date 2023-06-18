@@ -9,6 +9,8 @@
 #define TB_UTILS_H
 #include <vpi_user.h>
 #include "type.h"
+void tb_vpi_put_logic_1b_t(vpiHandle argv, u8_t var);
+
 void tb_vpi_put_logic_u8_t(vpiHandle argv, u8_t var);
 
 void tb_vpi_put_logic_u32_t(vpiHandle argv, u32_t var);

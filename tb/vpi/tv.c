@@ -26,40 +26,69 @@ tv_t * tv_alloc(const char *path){
 	return tv; 
 }
 
-void tv_create_packet(tv_t * t, size_t itch_n){
-	size_t r = 0; // read size
-	size_t n; // number of messages read
-	uint8_t buff[ITCH_MSG_MAX_LEN];		
-	uint8_t tmp_debug_id[18];
+/*
+ * TODO DOC LOL.
+ */
+void tv_create_packet(tv_t *t, size_t itch_n) {
 	// read itch messages from file
-	for( n = 0; n < itch_n ; n++){
-		r = get_next_bin_msg(t->fptr, buff, ITCH_MSG_MAX_LEN);
-		if ( r ==  0 ){
-			printf("No new message to read\n");
+	#ifdef DEBUG
+	printf("\ntv_create_packet cnt %ld\n\n", itch_n);
+	#endif
+	for(size_t msg_cnt = 0; msg_cnt < itch_n; msg_cnt++){
+
+		mlog("Reading message %ld/%ld \n\n", msg_cnt, itch_n);
+
+		/* Read an itch message. */
+		uint8_t buff[ITCH_MSG_MAX_LEN + 1];		
+		buff[ITCH_MSG_MAX_LEN] = 0xde;	
+		size_t msg_len = get_next_bin_msg(t->fptr, buff, ITCH_MSG_MAX_LEN);
+		if (msg_len ==  0) {
+			fprintf(stderr, "No new message to read\n");
 			break;
 		}
-		// add it's contents to mold struct
-		moldudp64_add_msg(t->mold_s, buff, r);
+		assert(buff[ITCH_MSG_MAX_LEN] == 0xde);
+		assert(msg_len <= ITCH_MSG_MAX_LEN);
+		
+		/* Debug info. */
+		mlog(buff, msg_len, "Read message '%ld'.\n", msg_cnt);
+		
+		/* Copy the read message at the end of the mold struct. */
+		moldudp64_add_msg(t->mold_s, buff, msg_len);
+		assert(buff[ITCH_MSG_MAX_LEN] == 0xde);
+	
 		// create itch structure with debug id
+		uint8_t tmp_debug_id[18];
 		moldudp64_get_debug_id(t->mold_s->sid, t->mold_s->seq, tmp_debug_id);
-		tb_itch_fifo_push(t->itch_fifo_s, tb_itch_create_struct(buff, r), tmp_debug_id); 
+		#ifdef DEBUG
+		//printf("Mold msg %ld at mold index %d debug id 0x", msg_cnt, t->mold_s->cnt);
+		//for (int i=17; i > -1; i-- )printf("%02hhx", tmp_debug_id[i]);
+		//printf("\n");
+		#endif
+		tb_itch_fifo_push(t->itch_fifo_s, tb_itch_create_struct(buff, msg_len), tmp_debug_id); 
 	}
-	if( t->mold_s->cnt > 0 ){
+
+	size_t r = 0; // read size
+	if(t->mold_s->cnt > 0) {
+		info("\ntv_create_packet flatten called\n\n");
 		r =	moldudp64_flatten(t->mold_s, &t->flat);
-		assert(t->flat);
+		assert(t->flat != NULL );
 	}else{
-		printf("No mold message to put into packet \n");
+		fprintf(stderr,"No mold message to put into packet \n");
 		t->flat = NULL;
 		r = 0;
 	}
 	t->flat_l = r;
 	t->flat_idx = 0;
 	moldudp64_clear( t-> mold_s );
+	#ifdef DEBUG
+	printf("tv_create_packet end, cnt %d\n", t->mold_s->cnt);
+	#endif
+	assert(t->mold_s->cnt == 0);	
 }
 
 uint64_t tv_axis_get_next_64b(tv_t* t, uint8_t *tkeep){
 	uint64_t tdata;
-
+	assert(t);
 	if ( axis_msg_finished(&t->flat_idx, t->flat_l ) ){
 		#ifdef DEBUG
 		printf("Axis message finished, creating new message\n");
@@ -67,7 +96,8 @@ uint64_t tv_axis_get_next_64b(tv_t* t, uint8_t *tkeep){
 		tv_create_packet( t, 1 );
 
 	}
-	if(t->flat != NULL ) tdata = axis_get_next_64b(t->flat, &t->flat_idx , t->flat_l, tkeep);
+	assert(t->flat!= NULL );
+	tdata = axis_get_next_64b(t->flat, &t->flat_idx , t->flat_l, tkeep);
 	return tdata;	
 }
 bool tv_axis_has_data(tv_t* t){

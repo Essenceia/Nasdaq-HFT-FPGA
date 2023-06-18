@@ -1,7 +1,7 @@
 BUILD=build
 INC=inc
 IVERILOG=/home/pitchu/AUR/iverilog
-FLAGS = -std=gnu99 -Wall -Wextra -Wconversion -Wshadow -Wundef -fno-common  -Wno-unused-parameter -Wno-type-limits -g -fpic
+FLAGS = -std=gnu99 -Wall -Wextra -Wconversion -Wshadow -Wundef -fno-common -Wno-unused-parameter -Wno-type-limits -fpic
 CC = cc $(if $(debug),-DDEBUG -g)
 LD = cc
 LIB=-L. -litch

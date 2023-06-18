@@ -10,6 +10,9 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 // define a macro for the number of max messages to not have to dynamically
 // allocate memory, more expensive in memory, less in computing ( perf ) 
@@ -47,5 +50,82 @@ void moldudp64_print(const moldudp64_s *p);
 void moldudp64_get_ids(moldudp64_s *p,uint16_t msg_cnt_offset,uint8_t *sid[10],uint64_t *seq); 
 
 void moldudp64_get_debug_id(const uint8_t sid[10], const uint64_t seq, uint8_t debug_id[18]);
+
+#define malloc_(x) (x *) malloc(sizeof(x))
+typedef uint8_t u8;
+
+
+#ifdef DEBUG
+#define info(...) printf(__VA_ARGS__)
+#else
+#define info(...)
+#endif
 #endif // MOLDUDP64_H
 
+
+/*
+ * Abort if the contents @a and @b,
+ * two blocks of size @nb differ.
+ */
+static inline void mcmp_(
+	const char *a_name,
+	const char *b_name,
+	void *a,
+	void *b,
+	size_t nb
+)
+{
+	uint8_t *x = a;
+	uint8_t *y = b;
+	for (size_t i = 0; i < nb; i++) {
+		if (x[i] != y[i]) {
+			printf("mcmp fail : ('%s'[%ld] = '%hhx') != ('%s'[%ld] = '%hhx').\n", a_name, i, x[i], b_name, i, y[i]);
+			abort();
+		}
+	}
+}
+#define mcmp(a, b, nb) mcmp_(#a, #b, a, b, nb)
+
+static inline void mlog_(
+	const char *name_a,
+	void *a,
+	size_t nb
+)
+{
+	uint8_t *x = a;
+	printf("array of '%ld' bytes : '%s(%p)'.\n", nb, name_a, a);
+	for(size_t i = 0; i < nb; i++) {
+		uint8_t c = x[i];
+		printf("- %02ld (%02hhx : %c)\n", i, c, isalpha(c) ? c : ' ');
+	}
+	printf("\n");
+}
+
+static inline void mlogs_(
+	const char *name_a,
+	const char *name_b,
+	void *a,
+	void *b,
+	size_t nb
+)
+{
+	uint8_t *x = a;
+	uint8_t *y = b;
+	printf("arrays of '%ld' bytes : '%s(%p)' - '%s(%p)'.\n", nb, name_a, a, name_b, b);
+	for(size_t i = 0; i < nb; i++) {
+		uint8_t c0 = x[i];
+		uint8_t c1 = y[i];
+		printf("- %02ld (%02hhx : %c) - (%02hhx : %c)\n", i, c0, isalpha(c0) ? c0 : ' ', c1, isalpha(c1) ? c1 : ' ');
+	}
+	printf("\n");
+}
+
+#ifdef DEBUG
+#define mlog(a, nb, ...) printf(__VA_ARGS__); mlog_(#a, a, nb);
+#define mlogs(a, b, nb, ...) printf(__VA_ARGS__); mlogs_(#a, #b, a, b, nb);
+#define mdbg(a, b, nb, ...) printf(__VA_ARGS__); mlogs_(#a, #b, a, b, nb); mcmp(a, b, nb);
+#else 
+#define mlog(a, nb, ...) 
+#define mlogs(a, b, nb, ...) 
+#define mdbg(a, b, nb, ...)
+#endif

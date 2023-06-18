@@ -8,6 +8,12 @@
 `define DEBUG_ID
 `endif
 
+`define assert_stop( X ) \
+if (~( X )) begin \
+$display("assert failed : time %t , line %0d",$time, `__LINE__); \
+$stop; \
+end 
+
 parameter AXI_DATA_W = 64;
 parameter AXI_KEEP_W = AXI_DATA_W/8;
 parameter LEN   = 8;
@@ -491,7 +497,7 @@ endfunction
 task vpi_task;
 begin
 	integer i;
-	for(i=0; i < 10 ; i++ ) begin
+	for(i=0; i < 15000000 ; i++ ) begin
 		#10	
 		tb_ready = udp_axis_tready_o;
 		$tb(tb_ready, tb_valid, tb_data, tb_keep, tb_finished);
@@ -996,206 +1002,209 @@ always @(
  ) 
 begin
 	if (~ tb_finished ) begin
-		assert( tb_itch_system_event_v == itch_system_event_v);
-		assert( ~tb_itch_system_event_v | tb_itch_system_event_v & tb_itch_system_event_stock_locate == itch_system_event_stock_locate);
-		assert( ~tb_itch_system_event_v | tb_itch_system_event_v & tb_itch_system_event_tracking_number == itch_system_event_tracking_number);
-		assert( ~tb_itch_system_event_v | tb_itch_system_event_v & tb_itch_system_event_timestamp == itch_system_event_timestamp);
-		assert( ~tb_itch_system_event_v | tb_itch_system_event_v & tb_itch_system_event_event_code == itch_system_event_event_code);
+		// check we are comparing the correct message
+		`assert_stop( tb_itch_debug_id == itch_debug_id );
+
+		`assert_stop( tb_itch_system_event_v == itch_system_event_v);
+		`assert_stop( ~tb_itch_system_event_v | tb_itch_system_event_v & tb_itch_system_event_stock_locate == itch_system_event_stock_locate);
+		`assert_stop( ~tb_itch_system_event_v | tb_itch_system_event_v & tb_itch_system_event_tracking_number == itch_system_event_tracking_number);
+		`assert_stop( ~tb_itch_system_event_v | tb_itch_system_event_v & tb_itch_system_event_timestamp == itch_system_event_timestamp);
+		`assert_stop( ~tb_itch_system_event_v | tb_itch_system_event_v & tb_itch_system_event_event_code == itch_system_event_event_code);
 		
-		assert( tb_itch_stock_directory_v == itch_stock_directory_v);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_stock_locate == itch_stock_directory_stock_locate);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_tracking_number == itch_stock_directory_tracking_number);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_timestamp == itch_stock_directory_timestamp);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_stock == itch_stock_directory_stock);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_market_category == itch_stock_directory_market_category);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_financial_status_indicator == itch_stock_directory_financial_status_indicator);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_round_lot_size == itch_stock_directory_round_lot_size);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_round_lots_only == itch_stock_directory_round_lots_only);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_issue_classification == itch_stock_directory_issue_classification);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_issue_sub_type == itch_stock_directory_issue_sub_type);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_authenticity == itch_stock_directory_authenticity);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_short_sale_threshold_indicator == itch_stock_directory_short_sale_threshold_indicator);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_ipo_flag == itch_stock_directory_ipo_flag);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_luld_reference_price_tier == itch_stock_directory_luld_reference_price_tier);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_etp_flag == itch_stock_directory_etp_flag);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_etp_leverage_factor == itch_stock_directory_etp_leverage_factor);
-		assert( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_inverse_indicator == itch_stock_directory_inverse_indicator);
+		`assert_stop( tb_itch_stock_directory_v == itch_stock_directory_v);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_stock_locate == itch_stock_directory_stock_locate);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_tracking_number == itch_stock_directory_tracking_number);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_timestamp == itch_stock_directory_timestamp);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_stock == itch_stock_directory_stock);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_market_category == itch_stock_directory_market_category);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_financial_status_indicator == itch_stock_directory_financial_status_indicator);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_round_lot_size == itch_stock_directory_round_lot_size);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_round_lots_only == itch_stock_directory_round_lots_only);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_issue_classification == itch_stock_directory_issue_classification);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_issue_sub_type == itch_stock_directory_issue_sub_type);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_authenticity == itch_stock_directory_authenticity);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_short_sale_threshold_indicator == itch_stock_directory_short_sale_threshold_indicator);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_ipo_flag == itch_stock_directory_ipo_flag);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_luld_reference_price_tier == itch_stock_directory_luld_reference_price_tier);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_etp_flag == itch_stock_directory_etp_flag);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_etp_leverage_factor == itch_stock_directory_etp_leverage_factor);
+		`assert_stop( ~tb_itch_stock_directory_v | tb_itch_stock_directory_v & tb_itch_stock_directory_inverse_indicator == itch_stock_directory_inverse_indicator);
 		
-		assert( tb_itch_stock_trading_action_v == itch_stock_trading_action_v);
-		assert( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_stock_locate == itch_stock_trading_action_stock_locate);
-		assert( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_tracking_number == itch_stock_trading_action_tracking_number);
-		assert( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_timestamp == itch_stock_trading_action_timestamp);
-		assert( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_stock == itch_stock_trading_action_stock);
-		assert( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_trading_state == itch_stock_trading_action_trading_state);
-		assert( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_reserved == itch_stock_trading_action_reserved);
-		assert( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_reason == itch_stock_trading_action_reason);
+		`assert_stop( tb_itch_stock_trading_action_v == itch_stock_trading_action_v);
+		`assert_stop( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_stock_locate == itch_stock_trading_action_stock_locate);
+		`assert_stop( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_tracking_number == itch_stock_trading_action_tracking_number);
+		`assert_stop( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_timestamp == itch_stock_trading_action_timestamp);
+		`assert_stop( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_stock == itch_stock_trading_action_stock);
+		`assert_stop( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_trading_state == itch_stock_trading_action_trading_state);
+		`assert_stop( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_reserved == itch_stock_trading_action_reserved);
+		`assert_stop( ~tb_itch_stock_trading_action_v | tb_itch_stock_trading_action_v & tb_itch_stock_trading_action_reason == itch_stock_trading_action_reason);
 		
-		assert( tb_itch_reg_sho_restriction_v == itch_reg_sho_restriction_v);
-		assert( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_stock_locate == itch_reg_sho_restriction_stock_locate);
-		assert( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_tracking_number == itch_reg_sho_restriction_tracking_number);
-		assert( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_timestamp == itch_reg_sho_restriction_timestamp);
-		assert( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_stock == itch_reg_sho_restriction_stock);
-		assert( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_reg_sho_action == itch_reg_sho_restriction_reg_sho_action);
+		`assert_stop( tb_itch_reg_sho_restriction_v == itch_reg_sho_restriction_v);
+		`assert_stop( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_stock_locate == itch_reg_sho_restriction_stock_locate);
+		`assert_stop( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_tracking_number == itch_reg_sho_restriction_tracking_number);
+		`assert_stop( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_timestamp == itch_reg_sho_restriction_timestamp);
+		`assert_stop( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_stock == itch_reg_sho_restriction_stock);
+		`assert_stop( ~tb_itch_reg_sho_restriction_v | tb_itch_reg_sho_restriction_v & tb_itch_reg_sho_restriction_reg_sho_action == itch_reg_sho_restriction_reg_sho_action);
 		
-		assert( tb_itch_market_participant_position_v == itch_market_participant_position_v);
-		assert( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_stock_locate == itch_market_participant_position_stock_locate);
-		assert( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_tracking_number == itch_market_participant_position_tracking_number);
-		assert( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_timestamp == itch_market_participant_position_timestamp);
-		assert( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_mpid == itch_market_participant_position_mpid);
-		assert( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_stock == itch_market_participant_position_stock);
-		assert( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_primary_market_maker == itch_market_participant_position_primary_market_maker);
-		assert( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_market_maker_mode == itch_market_participant_position_market_maker_mode);
-		assert( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_market_participant_state == itch_market_participant_position_market_participant_state);
+		`assert_stop( tb_itch_market_participant_position_v == itch_market_participant_position_v);
+		`assert_stop( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_stock_locate == itch_market_participant_position_stock_locate);
+		`assert_stop( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_tracking_number == itch_market_participant_position_tracking_number);
+		`assert_stop( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_timestamp == itch_market_participant_position_timestamp);
+		`assert_stop( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_mpid == itch_market_participant_position_mpid);
+		`assert_stop( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_stock == itch_market_participant_position_stock);
+		`assert_stop( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_primary_market_maker == itch_market_participant_position_primary_market_maker);
+		`assert_stop( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_market_maker_mode == itch_market_participant_position_market_maker_mode);
+		`assert_stop( ~tb_itch_market_participant_position_v | tb_itch_market_participant_position_v & tb_itch_market_participant_position_market_participant_state == itch_market_participant_position_market_participant_state);
 		
-		assert( tb_itch_mwcb_decline_level_v == itch_mwcb_decline_level_v);
-		assert( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_stock_locate == itch_mwcb_decline_level_stock_locate);
-		assert( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_tracking_number == itch_mwcb_decline_level_tracking_number);
-		assert( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_timestamp == itch_mwcb_decline_level_timestamp);
-		assert( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_level_1 == itch_mwcb_decline_level_level_1);
-		assert( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_level_2 == itch_mwcb_decline_level_level_2);
-		assert( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_level_3 == itch_mwcb_decline_level_level_3);
+		`assert_stop( tb_itch_mwcb_decline_level_v == itch_mwcb_decline_level_v);
+		`assert_stop( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_stock_locate == itch_mwcb_decline_level_stock_locate);
+		`assert_stop( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_tracking_number == itch_mwcb_decline_level_tracking_number);
+		`assert_stop( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_timestamp == itch_mwcb_decline_level_timestamp);
+		`assert_stop( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_level_1 == itch_mwcb_decline_level_level_1);
+		`assert_stop( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_level_2 == itch_mwcb_decline_level_level_2);
+		`assert_stop( ~tb_itch_mwcb_decline_level_v | tb_itch_mwcb_decline_level_v & tb_itch_mwcb_decline_level_level_3 == itch_mwcb_decline_level_level_3);
 		
-		assert( tb_itch_mwcb_status_v == itch_mwcb_status_v);
-		assert( ~tb_itch_mwcb_status_v | tb_itch_mwcb_status_v & tb_itch_mwcb_status_stock_locate == itch_mwcb_status_stock_locate);
-		assert( ~tb_itch_mwcb_status_v | tb_itch_mwcb_status_v & tb_itch_mwcb_status_tracking_number == itch_mwcb_status_tracking_number);
-		assert( ~tb_itch_mwcb_status_v | tb_itch_mwcb_status_v & tb_itch_mwcb_status_timestamp == itch_mwcb_status_timestamp);
-		assert( ~tb_itch_mwcb_status_v | tb_itch_mwcb_status_v & tb_itch_mwcb_status_breached_level == itch_mwcb_status_breached_level);
+		`assert_stop( tb_itch_mwcb_status_v == itch_mwcb_status_v);
+		`assert_stop( ~tb_itch_mwcb_status_v | tb_itch_mwcb_status_v & tb_itch_mwcb_status_stock_locate == itch_mwcb_status_stock_locate);
+		`assert_stop( ~tb_itch_mwcb_status_v | tb_itch_mwcb_status_v & tb_itch_mwcb_status_tracking_number == itch_mwcb_status_tracking_number);
+		`assert_stop( ~tb_itch_mwcb_status_v | tb_itch_mwcb_status_v & tb_itch_mwcb_status_timestamp == itch_mwcb_status_timestamp);
+		`assert_stop( ~tb_itch_mwcb_status_v | tb_itch_mwcb_status_v & tb_itch_mwcb_status_breached_level == itch_mwcb_status_breached_level);
 		
-		assert( tb_itch_ipo_quoting_period_update_v == itch_ipo_quoting_period_update_v);
-		assert( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_stock_locate == itch_ipo_quoting_period_update_stock_locate);
-		assert( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_tracking_number == itch_ipo_quoting_period_update_tracking_number);
-		assert( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_timestamp == itch_ipo_quoting_period_update_timestamp);
-		assert( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_stock == itch_ipo_quoting_period_update_stock);
-		assert( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_ipo_quotation_release_time == itch_ipo_quoting_period_update_ipo_quotation_release_time);
-		assert( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_ipo_quotation_release_qualifier == itch_ipo_quoting_period_update_ipo_quotation_release_qualifier);
-		assert( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_ipo_price == itch_ipo_quoting_period_update_ipo_price);
+		`assert_stop( tb_itch_ipo_quoting_period_update_v == itch_ipo_quoting_period_update_v);
+		`assert_stop( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_stock_locate == itch_ipo_quoting_period_update_stock_locate);
+		`assert_stop( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_tracking_number == itch_ipo_quoting_period_update_tracking_number);
+		`assert_stop( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_timestamp == itch_ipo_quoting_period_update_timestamp);
+		`assert_stop( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_stock == itch_ipo_quoting_period_update_stock);
+		`assert_stop( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_ipo_quotation_release_time == itch_ipo_quoting_period_update_ipo_quotation_release_time);
+		`assert_stop( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_ipo_quotation_release_qualifier == itch_ipo_quoting_period_update_ipo_quotation_release_qualifier);
+		`assert_stop( ~tb_itch_ipo_quoting_period_update_v | tb_itch_ipo_quoting_period_update_v & tb_itch_ipo_quoting_period_update_ipo_price == itch_ipo_quoting_period_update_ipo_price);
 		
-		assert( tb_itch_luld_auction_collar_v == itch_luld_auction_collar_v);
-		assert( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_stock_locate == itch_luld_auction_collar_stock_locate);
-		assert( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_tracking_number == itch_luld_auction_collar_tracking_number);
-		assert( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_timestamp == itch_luld_auction_collar_timestamp);
-		assert( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_stock == itch_luld_auction_collar_stock);
-		assert( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_auction_collar_reference_price == itch_luld_auction_collar_auction_collar_reference_price);
-		assert( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_upper_auction_collar_price == itch_luld_auction_collar_upper_auction_collar_price);
-		assert( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_lower_auction_collar_price == itch_luld_auction_collar_lower_auction_collar_price);
-		assert( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_auction_collar_extension == itch_luld_auction_collar_auction_collar_extension);
+		`assert_stop( tb_itch_luld_auction_collar_v == itch_luld_auction_collar_v);
+		`assert_stop( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_stock_locate == itch_luld_auction_collar_stock_locate);
+		`assert_stop( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_tracking_number == itch_luld_auction_collar_tracking_number);
+		`assert_stop( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_timestamp == itch_luld_auction_collar_timestamp);
+		`assert_stop( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_stock == itch_luld_auction_collar_stock);
+		`assert_stop( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_auction_collar_reference_price == itch_luld_auction_collar_auction_collar_reference_price);
+		`assert_stop( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_upper_auction_collar_price == itch_luld_auction_collar_upper_auction_collar_price);
+		`assert_stop( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_lower_auction_collar_price == itch_luld_auction_collar_lower_auction_collar_price);
+		`assert_stop( ~tb_itch_luld_auction_collar_v | tb_itch_luld_auction_collar_v & tb_itch_luld_auction_collar_auction_collar_extension == itch_luld_auction_collar_auction_collar_extension);
 		
-		assert( tb_itch_operational_halt_v == itch_operational_halt_v);
-		assert( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_stock_locate == itch_operational_halt_stock_locate);
-		assert( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_tracking_number == itch_operational_halt_tracking_number);
-		assert( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_timestamp == itch_operational_halt_timestamp);
-		assert( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_stock == itch_operational_halt_stock);
-		assert( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_market_code == itch_operational_halt_market_code);
-		assert( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_operational_halt_action == itch_operational_halt_operational_halt_action);
+		`assert_stop( tb_itch_operational_halt_v == itch_operational_halt_v);
+		`assert_stop( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_stock_locate == itch_operational_halt_stock_locate);
+		`assert_stop( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_tracking_number == itch_operational_halt_tracking_number);
+		`assert_stop( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_timestamp == itch_operational_halt_timestamp);
+		`assert_stop( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_stock == itch_operational_halt_stock);
+		`assert_stop( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_market_code == itch_operational_halt_market_code);
+		`assert_stop( ~tb_itch_operational_halt_v | tb_itch_operational_halt_v & tb_itch_operational_halt_operational_halt_action == itch_operational_halt_operational_halt_action);
 		
-		assert( tb_itch_add_order_v == itch_add_order_v);
-		assert( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_stock_locate == itch_add_order_stock_locate);
-		assert( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_tracking_number == itch_add_order_tracking_number);
-		assert( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_timestamp == itch_add_order_timestamp);
-		assert( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_order_reference_number == itch_add_order_order_reference_number);
-		assert( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_buy_sell_indicator == itch_add_order_buy_sell_indicator);
-		assert( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_shares == itch_add_order_shares);
-		assert( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_stock == itch_add_order_stock);
-		assert( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_price == itch_add_order_price);
+		`assert_stop( tb_itch_add_order_v == itch_add_order_v);
+		`assert_stop( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_stock_locate == itch_add_order_stock_locate);
+		`assert_stop( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_tracking_number == itch_add_order_tracking_number);
+		`assert_stop( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_timestamp == itch_add_order_timestamp);
+		`assert_stop( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_order_reference_number == itch_add_order_order_reference_number);
+		`assert_stop( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_buy_sell_indicator == itch_add_order_buy_sell_indicator);
+		`assert_stop( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_shares == itch_add_order_shares);
+		`assert_stop( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_stock == itch_add_order_stock);
+		`assert_stop( ~tb_itch_add_order_v | tb_itch_add_order_v & tb_itch_add_order_price == itch_add_order_price);
 		
-		assert( tb_itch_add_order_with_mpid_v == itch_add_order_with_mpid_v);
-		assert( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_stock_locate == itch_add_order_with_mpid_stock_locate);
-		assert( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_tracking_number == itch_add_order_with_mpid_tracking_number);
-		assert( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_timestamp == itch_add_order_with_mpid_timestamp);
-		assert( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_order_reference_number == itch_add_order_with_mpid_order_reference_number);
-		assert( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_buy_sell_indicator == itch_add_order_with_mpid_buy_sell_indicator);
-		assert( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_shares == itch_add_order_with_mpid_shares);
-		assert( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_stock == itch_add_order_with_mpid_stock);
-		assert( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_price == itch_add_order_with_mpid_price);
-		assert( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_attribution == itch_add_order_with_mpid_attribution);
+		`assert_stop( tb_itch_add_order_with_mpid_v == itch_add_order_with_mpid_v);
+		`assert_stop( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_stock_locate == itch_add_order_with_mpid_stock_locate);
+		`assert_stop( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_tracking_number == itch_add_order_with_mpid_tracking_number);
+		`assert_stop( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_timestamp == itch_add_order_with_mpid_timestamp);
+		`assert_stop( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_order_reference_number == itch_add_order_with_mpid_order_reference_number);
+		`assert_stop( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_buy_sell_indicator == itch_add_order_with_mpid_buy_sell_indicator);
+		`assert_stop( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_shares == itch_add_order_with_mpid_shares);
+		`assert_stop( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_stock == itch_add_order_with_mpid_stock);
+		`assert_stop( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_price == itch_add_order_with_mpid_price);
+		`assert_stop( ~tb_itch_add_order_with_mpid_v | tb_itch_add_order_with_mpid_v & tb_itch_add_order_with_mpid_attribution == itch_add_order_with_mpid_attribution);
 		
-		assert( tb_itch_order_executed_v == itch_order_executed_v);
-		assert( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_stock_locate == itch_order_executed_stock_locate);
-		assert( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_tracking_number == itch_order_executed_tracking_number);
-		assert( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_timestamp == itch_order_executed_timestamp);
-		assert( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_order_reference_number == itch_order_executed_order_reference_number);
-		assert( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_executed_shares == itch_order_executed_executed_shares);
-		assert( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_match_number == itch_order_executed_match_number);
+		`assert_stop( tb_itch_order_executed_v == itch_order_executed_v);
+		`assert_stop( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_stock_locate == itch_order_executed_stock_locate);
+		`assert_stop( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_tracking_number == itch_order_executed_tracking_number);
+		`assert_stop( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_timestamp == itch_order_executed_timestamp);
+		`assert_stop( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_order_reference_number == itch_order_executed_order_reference_number);
+		`assert_stop( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_executed_shares == itch_order_executed_executed_shares);
+		`assert_stop( ~tb_itch_order_executed_v | tb_itch_order_executed_v & tb_itch_order_executed_match_number == itch_order_executed_match_number);
 		
-		assert( tb_itch_order_executed_with_price_v == itch_order_executed_with_price_v);
-		assert( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_stock_locate == itch_order_executed_with_price_stock_locate);
-		assert( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_tracking_number == itch_order_executed_with_price_tracking_number);
-		assert( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_timestamp == itch_order_executed_with_price_timestamp);
-		assert( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_order_reference_number == itch_order_executed_with_price_order_reference_number);
-		assert( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_executed_shares == itch_order_executed_with_price_executed_shares);
-		assert( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_match_number == itch_order_executed_with_price_match_number);
-		assert( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_printable == itch_order_executed_with_price_printable);
-		assert( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_execution_price == itch_order_executed_with_price_execution_price);
+		`assert_stop( tb_itch_order_executed_with_price_v == itch_order_executed_with_price_v);
+		`assert_stop( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_stock_locate == itch_order_executed_with_price_stock_locate);
+		`assert_stop( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_tracking_number == itch_order_executed_with_price_tracking_number);
+		`assert_stop( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_timestamp == itch_order_executed_with_price_timestamp);
+		`assert_stop( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_order_reference_number == itch_order_executed_with_price_order_reference_number);
+		`assert_stop( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_executed_shares == itch_order_executed_with_price_executed_shares);
+		`assert_stop( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_match_number == itch_order_executed_with_price_match_number);
+		`assert_stop( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_printable == itch_order_executed_with_price_printable);
+		`assert_stop( ~tb_itch_order_executed_with_price_v | tb_itch_order_executed_with_price_v & tb_itch_order_executed_with_price_execution_price == itch_order_executed_with_price_execution_price);
 		
-		assert( tb_itch_order_cancel_v == itch_order_cancel_v);
-		assert( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_stock_locate == itch_order_cancel_stock_locate);
-		assert( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_tracking_number == itch_order_cancel_tracking_number);
-		assert( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_timestamp == itch_order_cancel_timestamp);
-		assert( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_order_reference_number == itch_order_cancel_order_reference_number);
-		assert( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_cancelled_shares == itch_order_cancel_cancelled_shares);
+		`assert_stop( tb_itch_order_cancel_v == itch_order_cancel_v);
+		`assert_stop( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_stock_locate == itch_order_cancel_stock_locate);
+		`assert_stop( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_tracking_number == itch_order_cancel_tracking_number);
+		`assert_stop( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_timestamp == itch_order_cancel_timestamp);
+		`assert_stop( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_order_reference_number == itch_order_cancel_order_reference_number);
+		`assert_stop( ~tb_itch_order_cancel_v | tb_itch_order_cancel_v & tb_itch_order_cancel_cancelled_shares == itch_order_cancel_cancelled_shares);
 		
-		assert( tb_itch_order_delete_v == itch_order_delete_v);
-		assert( ~tb_itch_order_delete_v | tb_itch_order_delete_v & tb_itch_order_delete_stock_locate == itch_order_delete_stock_locate);
-		assert( ~tb_itch_order_delete_v | tb_itch_order_delete_v & tb_itch_order_delete_tracking_number == itch_order_delete_tracking_number);
-		assert( ~tb_itch_order_delete_v | tb_itch_order_delete_v & tb_itch_order_delete_timestamp == itch_order_delete_timestamp);
-		assert( ~tb_itch_order_delete_v | tb_itch_order_delete_v & tb_itch_order_delete_order_reference_number == itch_order_delete_order_reference_number);
+		`assert_stop( tb_itch_order_delete_v == itch_order_delete_v);
+		`assert_stop( ~tb_itch_order_delete_v | tb_itch_order_delete_v & tb_itch_order_delete_stock_locate == itch_order_delete_stock_locate);
+		`assert_stop( ~tb_itch_order_delete_v | tb_itch_order_delete_v & tb_itch_order_delete_tracking_number == itch_order_delete_tracking_number);
+		`assert_stop( ~tb_itch_order_delete_v | tb_itch_order_delete_v & tb_itch_order_delete_timestamp == itch_order_delete_timestamp);
+		`assert_stop( ~tb_itch_order_delete_v | tb_itch_order_delete_v & tb_itch_order_delete_order_reference_number == itch_order_delete_order_reference_number);
 		
-		assert( tb_itch_order_replace_v == itch_order_replace_v);
-		assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_stock_locate == itch_order_replace_stock_locate);
-		assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_tracking_number == itch_order_replace_tracking_number);
-		assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_timestamp == itch_order_replace_timestamp);
-		assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_original_order_reference_number == itch_order_replace_original_order_reference_number);
-		assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_new_order_reference_number == itch_order_replace_new_order_reference_number);
-		assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_shares == itch_order_replace_shares);
-		assert( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_price == itch_order_replace_price);
+		`assert_stop( tb_itch_order_replace_v == itch_order_replace_v);
+		`assert_stop( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_stock_locate == itch_order_replace_stock_locate);
+		`assert_stop( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_tracking_number == itch_order_replace_tracking_number);
+		`assert_stop( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_timestamp == itch_order_replace_timestamp);
+		`assert_stop( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_original_order_reference_number == itch_order_replace_original_order_reference_number);
+		`assert_stop( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_new_order_reference_number == itch_order_replace_new_order_reference_number);
+		`assert_stop( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_shares == itch_order_replace_shares);
+		`assert_stop( ~tb_itch_order_replace_v | tb_itch_order_replace_v & tb_itch_order_replace_price == itch_order_replace_price);
 		
-		assert( tb_itch_trade_v == itch_trade_v);
-		assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_stock_locate == itch_trade_stock_locate);
-		assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_tracking_number == itch_trade_tracking_number);
-		assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_timestamp == itch_trade_timestamp);
-		assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_order_reference_number == itch_trade_order_reference_number);
-		assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_buy_sell_indicator == itch_trade_buy_sell_indicator);
-		assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_shares == itch_trade_shares);
-		assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_stock == itch_trade_stock);
-		assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_price == itch_trade_price);
-		assert( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_match_number == itch_trade_match_number);
+		`assert_stop( tb_itch_trade_v == itch_trade_v);
+		`assert_stop( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_stock_locate == itch_trade_stock_locate);
+		`assert_stop( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_tracking_number == itch_trade_tracking_number);
+		`assert_stop( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_timestamp == itch_trade_timestamp);
+		`assert_stop( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_order_reference_number == itch_trade_order_reference_number);
+		`assert_stop( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_buy_sell_indicator == itch_trade_buy_sell_indicator);
+		`assert_stop( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_shares == itch_trade_shares);
+		`assert_stop( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_stock == itch_trade_stock);
+		`assert_stop( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_price == itch_trade_price);
+		`assert_stop( ~tb_itch_trade_v | tb_itch_trade_v & tb_itch_trade_match_number == itch_trade_match_number);
 		
-		assert( tb_itch_cross_trade_v == itch_cross_trade_v);
-		assert( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_stock_locate == itch_cross_trade_stock_locate);
-		assert( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_tracking_number == itch_cross_trade_tracking_number);
-		assert( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_timestamp == itch_cross_trade_timestamp);
-		assert( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_shares == itch_cross_trade_shares);
-		assert( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_stock == itch_cross_trade_stock);
-		assert( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_cross_price == itch_cross_trade_cross_price);
-		assert( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_match_number == itch_cross_trade_match_number);
-		assert( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_cross_type == itch_cross_trade_cross_type);
+		`assert_stop( tb_itch_cross_trade_v == itch_cross_trade_v);
+		`assert_stop( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_stock_locate == itch_cross_trade_stock_locate);
+		`assert_stop( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_tracking_number == itch_cross_trade_tracking_number);
+		`assert_stop( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_timestamp == itch_cross_trade_timestamp);
+		`assert_stop( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_shares == itch_cross_trade_shares);
+		`assert_stop( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_stock == itch_cross_trade_stock);
+		`assert_stop( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_cross_price == itch_cross_trade_cross_price);
+		`assert_stop( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_match_number == itch_cross_trade_match_number);
+		`assert_stop( ~tb_itch_cross_trade_v | tb_itch_cross_trade_v & tb_itch_cross_trade_cross_type == itch_cross_trade_cross_type);
 		
-		assert( tb_itch_broken_trade_v == itch_broken_trade_v);
-		assert( ~tb_itch_broken_trade_v | tb_itch_broken_trade_v & tb_itch_broken_trade_stock_locate == itch_broken_trade_stock_locate);
-		assert( ~tb_itch_broken_trade_v | tb_itch_broken_trade_v & tb_itch_broken_trade_tracking_number == itch_broken_trade_tracking_number);
-		assert( ~tb_itch_broken_trade_v | tb_itch_broken_trade_v & tb_itch_broken_trade_timestamp == itch_broken_trade_timestamp);
-		assert( ~tb_itch_broken_trade_v | tb_itch_broken_trade_v & tb_itch_broken_trade_match_number == itch_broken_trade_match_number);
+		`assert_stop( tb_itch_broken_trade_v == itch_broken_trade_v);
+		`assert_stop( ~tb_itch_broken_trade_v | tb_itch_broken_trade_v & tb_itch_broken_trade_stock_locate == itch_broken_trade_stock_locate);
+		`assert_stop( ~tb_itch_broken_trade_v | tb_itch_broken_trade_v & tb_itch_broken_trade_tracking_number == itch_broken_trade_tracking_number);
+		`assert_stop( ~tb_itch_broken_trade_v | tb_itch_broken_trade_v & tb_itch_broken_trade_timestamp == itch_broken_trade_timestamp);
+		`assert_stop( ~tb_itch_broken_trade_v | tb_itch_broken_trade_v & tb_itch_broken_trade_match_number == itch_broken_trade_match_number);
 		
-		assert( tb_itch_net_order_imbalance_indicator_v == itch_net_order_imbalance_indicator_v);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_stock_locate == itch_net_order_imbalance_indicator_stock_locate);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_tracking_number == itch_net_order_imbalance_indicator_tracking_number);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_timestamp == itch_net_order_imbalance_indicator_timestamp);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_paired_shares == itch_net_order_imbalance_indicator_paired_shares);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_imbalance_shares == itch_net_order_imbalance_indicator_imbalance_shares);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_imbalance_direction == itch_net_order_imbalance_indicator_imbalance_direction);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_stock == itch_net_order_imbalance_indicator_stock);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_far_price == itch_net_order_imbalance_indicator_far_price);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_near_price == itch_net_order_imbalance_indicator_near_price);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_current_reference_price == itch_net_order_imbalance_indicator_current_reference_price);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_cross_type == itch_net_order_imbalance_indicator_cross_type);
-		assert( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_price_variation_indicator == itch_net_order_imbalance_indicator_price_variation_indicator);
+		`assert_stop( tb_itch_net_order_imbalance_indicator_v == itch_net_order_imbalance_indicator_v);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_stock_locate == itch_net_order_imbalance_indicator_stock_locate);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_tracking_number == itch_net_order_imbalance_indicator_tracking_number);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_timestamp == itch_net_order_imbalance_indicator_timestamp);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_paired_shares == itch_net_order_imbalance_indicator_paired_shares);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_imbalance_shares == itch_net_order_imbalance_indicator_imbalance_shares);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_imbalance_direction == itch_net_order_imbalance_indicator_imbalance_direction);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_stock == itch_net_order_imbalance_indicator_stock);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_far_price == itch_net_order_imbalance_indicator_far_price);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_near_price == itch_net_order_imbalance_indicator_near_price);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_current_reference_price == itch_net_order_imbalance_indicator_current_reference_price);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_cross_type == itch_net_order_imbalance_indicator_cross_type);
+		`assert_stop( ~tb_itch_net_order_imbalance_indicator_v | tb_itch_net_order_imbalance_indicator_v & tb_itch_net_order_imbalance_indicator_price_variation_indicator == itch_net_order_imbalance_indicator_price_variation_indicator);
 		
-		assert( tb_itch_retail_price_improvement_indicator_v == itch_retail_price_improvement_indicator_v);
-		assert( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_stock_locate == itch_retail_price_improvement_indicator_stock_locate);
-		assert( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_tracking_number == itch_retail_price_improvement_indicator_tracking_number);
-		assert( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_timestamp == itch_retail_price_improvement_indicator_timestamp);
-		assert( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_stock == itch_retail_price_improvement_indicator_stock);
-		assert( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_interest_flag == itch_retail_price_improvement_indicator_interest_flag);
+		`assert_stop( tb_itch_retail_price_improvement_indicator_v == itch_retail_price_improvement_indicator_v);
+		`assert_stop( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_stock_locate == itch_retail_price_improvement_indicator_stock_locate);
+		`assert_stop( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_tracking_number == itch_retail_price_improvement_indicator_tracking_number);
+		`assert_stop( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_timestamp == itch_retail_price_improvement_indicator_timestamp);
+		`assert_stop( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_stock == itch_retail_price_improvement_indicator_stock);
+		`assert_stop( ~tb_itch_retail_price_improvement_indicator_v | tb_itch_retail_price_improvement_indicator_v & tb_itch_retail_price_improvement_indicator_interest_flag == itch_retail_price_improvement_indicator_interest_flag);
 	end
 end
 

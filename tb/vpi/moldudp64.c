@@ -21,28 +21,29 @@ moldudp64_s * moldudp64_alloc(){
 	return p;
 }
 
-void moldudp64_add_msg(moldudp64_s *p, void *msg_data, size_t msg_len){
-	uint16_t cnt = p->cnt;
-	assert( cnt < MOLDUDP64_MSG_CNT_MAX );
+void moldudp64_add_msg(
+	moldudp64_s *p,
+	void *msg_data,
+	size_t msg_len
+)
+{
+
+	/* Reserve a message element. */
+	const uint16_t cnt = p->cnt++;
+	assert(cnt < MOLDUDP64_MSG_CNT_MAX);
 	assert(msg_len);
 
-	// resize msg, add 1
-	p->msg[cnt] = (moldudp64_msg_s*) malloc(sizeof(moldudp64_msg_s)); 
+	/* Allocate a message buffer, copy. */
+	assert(!p->msg[cnt]);
+	assert(msg_len <= (uint16_t) -1);
+	p->msg[cnt] = malloc_(moldudp64_msg_s); 
 	p->msg[cnt]->len  = (uint16_t) msg_len;
-	p->msg[cnt]->data = (uint8_t*) malloc(sizeof(uint8_t)*msg_len);
+	p->msg[cnt]->data = (uint8_t *) malloc(sizeof(uint8_t) * msg_len);
 	memcpy(p->msg[cnt]->data, msg_data, msg_len * sizeof(uint8_t));
 
-	#ifdef DEBUG
-	uint8_t c;
-	printf("mold add msg, raw data :\n");
-	for(int i =(int)msg_len-1; i > -1; i--){
-		c = p->msg[cnt]->data[i];
-		printf("byte %02d %02hhx (%c)\n",i, c, isalpha(c)? c : ' ');
-	}
-	printf("\n");
-	#endif
-	
-	p->cnt+=1;
+	/* Debug. */
+	mdbg(msg_data, p->msg[cnt]->data, msg_len, "Copied mold message %d (%p).\n", cnt, p->msg[cnt]->data);
+
 }
 
 void moldudp64_clear(moldudp64_s *p){
@@ -50,6 +51,7 @@ void moldudp64_clear(moldudp64_s *p){
 		assert(p->msg[i]->data);
 		free(p->msg[i]->data);
 		free(p->msg[i]);
+		p->msg[i] = 0;
 	}
 	// update seq
 	assert(!__builtin_uaddl_overflow(p->seq, (uint64_t)p->cnt, &p->seq )); 
@@ -60,71 +62,128 @@ void moldudp64_free(moldudp64_s *p){
 	free(p);
 }
 
-size_t moldudp64_flatten(moldudp64_s *p, uint8_t **flat){
-	uint16_t c;
+size_t moldudp64_flatten(
+	moldudp64_s *p,
+	uint8_t **flat
+)
+{
 	// big endian versions
 	uint8_t  sid_be[10];
 	uint64_t seq_be;
 	uint16_t cnt_be;
 	uint16_t len_be;	
-	size_t s = offsetof(moldudp64_s, msg);
+	size_t pkt_size = 20;
+	assert(offsetof(moldudp64_s, msg) == 20);
+	assert(sizeof(sid_be) == 10);
+	assert(sizeof(seq_be) == 8);
+	assert(sizeof(cnt_be) == 2);
+	assert(sizeof(len_be) == 2);
+
 	#ifdef DEBUG
-	printf("offset size %d\n", s);
+	size_t tmp_s = 0;
 	#endif
-	// count size
-	for ( c = 0; c < p->cnt; c++){
-		s += sizeof(uint16_t);
-		#ifdef DEBUG
-		printf("size %d\n", s);
-		#endif
-		s += p->msg[c]->len;
-		assert(p->msg[c]->len);
-		#ifdef DEBUG
-		printf("size %d\n", s);
-		#endif	
+
+	info("offset size %ld\n", pkt_size);
+
+	/* For each message, add 2 bytes for the header and
+	 * the message length. */
+	for (uint16_t msg_cnt = 0; msg_cnt < p->cnt; msg_cnt++){
+		pkt_size += sizeof(uint16_t);
+		info("msg '%d' header size '2' -> size = '%ld'\n", msg_cnt, pkt_size);
+		pkt_size += p->msg[msg_cnt]->len;
+		assert(p->msg[msg_cnt]->len);
+		info("msg '%d' size '%d', -> size '%ld'\n", msg_cnt, p->msg[msg_cnt]->len, pkt_size);
 	}
-	assert(s);
-	#ifdef DEBUG
-	printf("mold flaten cnt %d msg 0 len %d , s %d \n", p->cnt, p->msg[0]->len, s );
-	#endif
-	// allocate
-	if ( *flat == NULL ){
-		*flat = ( uint8_t *) malloc( sizeof(uint8_t) * s );
-	}else{ 
-		*flat = realloc(*flat, sizeof(uint8_t) * s);
-	}
-	assert(*flat);
-	// reset offset
-	s = 0;
+
+	/* Update the destination packet size. */
+	if (*flat != NULL) free(*flat);
+	void *dst = *flat = (uint8_t *) malloc(sizeof(uint8_t) * pkt_size );
+	assert(dst);
+
 	// switch from default endian to big endian 
 	for ( int  l = 0, h = sizeof(p->sid)-1 ; l < h ; l++, h-- ){
 		sid_be[h] = p->sid[l];
 		sid_be[l] = p->sid[h];
 	}
-	// copy memory
-	memcpy(*flat+s, sid_be, sizeof(uint8_t)*10);
-	s += sizeof(sid_be);
-	seq_be =htobe64( p->seq ); 
-	memcpy(*flat+s, &seq_be, sizeof(uint8_t)*8);
-	s+= sizeof(seq_be);
-	cnt_be =htobe16( p->cnt );
-	memcpy(*flat+s, &cnt_be, sizeof(uint8_t)*2);
-	s += sizeof(cnt_be);
-	//printf("cnt le %#x be %#x\n", p->cnt, cnt_be); 	
-	for( c = 0; c < p->cnt; c++ ){
-		len_be = htobe16(p->msg[c]->len);
-		memcpy(*flat+s, &len_be, sizeof(uint8_t)*2);
-		s += sizeof(len_be);
-		#ifdef DEBUG
-		printf("size %d\n", s);
-		#endif	
-		memcpy(*flat+s, p->msg[c]->data, sizeof(uint8_t) * p->msg[c]->len);
-		s+= p->msg[c]->len;
-		#ifdef DEBUG
-		printf("size %d\n", s);
-		#endif	
+	seq_be = htobe64(p->seq); 
+	cnt_be = htobe16(p->cnt);
+
+
+	/* Copy utilities. */
+	#define COPY_VAL(x) { \
+		memcpy(dst + pkt_cnt, &x, sizeof(x)); \
+		pkt_cnt += sizeof(x); \
 	}
-	return s;
+	#define COPY_ARR(x) { \
+		memcpy(dst + pkt_cnt, x, sizeof(x)); \
+		pkt_cnt += sizeof(x); \
+	}
+	#define COPY_PTR(x, len) { \
+		memcpy(dst + pkt_cnt, x, len * sizeof(*x)); \
+		pkt_cnt += len * sizeof(*x); \
+	}
+
+
+
+	/* Copy the header. */
+	size_t pkt_cnt = 0;
+	COPY_ARR(sid_be);
+		//memcpy(*flat+pkt_cnt, sid_be, sizeof(uint8_t)*10);
+		//pkt_cnt += sizeof(sid_be);
+	COPY_VAL(seq_be);
+		//memcpy(*flat+pkt_cnt, &seq_be, sizeof(uint8_t)*8);
+		//pkt_cnt+= sizeof(seq_be);
+	COPY_VAL(cnt_be);
+		//memcpy(*flat + pkt_cnt, &cnt_be, sizeof(uint8_t)*2);
+		//pkt_cnt += sizeof(cnt_be);
+	
+	/* Copy each message. */
+	for (uint16_t msg_cnt = 0; msg_cnt < p->cnt; msg_cnt++){
+
+		mlog(p->msg[msg_cnt]->data, p->msg[msg_cnt]->len, "Read mold message %d (%p).\n", msg_cnt, p->msg[msg_cnt]->data);
+
+		/* Convert endianness. */
+		uint16_t msg_len_be;	
+		assert(sizeof(msg_len_be) == 2);
+		msg_len_be = htobe16(p->msg[msg_cnt]->len);
+
+		/* Copy data. */
+		COPY_VAL(msg_len_be);
+			//memcpy(*flat +pkt_cnt, &msg_len_be, sizeof(uint8_t)*2);
+			//pkt_cnt += sizeof(uint16_t);
+		info("msg %d msg_len_be_off %ld\n", msg_cnt, pkt_cnt);
+		
+		/* Save. */
+		#ifdef DEBUG
+		tmp_s = pkt_cnt;
+		#endif	
+
+		COPY_PTR(p->msg[msg_cnt]->data, p->msg[msg_cnt]->len);
+			//memcpy(*flat + pkt_cnt, p->msg[msg_cnt]->data, sizeof(uint8_t) * p->msg[msg_cnt]->len);
+			//pkt_cnt += p->msg[msg_cnt]->len;
+		mdbg(dst + tmp_s, p->msg[msg_cnt]->data, p->msg[msg_cnt]->len, "Flattened mold message %d (%p).\n", msg_cnt, p->msg[msg_cnt]->data);
+
+		#ifdef DEBUG
+		uint8_t a;
+		moldudp64_print(p);
+		info("flatten mold msg, raw data :\n");
+		for(int i =(int)(p->msg[msg_cnt]->len)-1; i > -1; i--){
+			a = p->msg[msg_cnt]->data[i];
+			info("byte %02d %02hhx (%c)\n", i, a, isalpha(a)? a : ' ');
+		}
+		info("\n");
+		
+		info("total data %ld\nwritten data :\n",pkt_cnt);
+		for(int i =(int)(p->msg[msg_cnt]->len)-1; i > -1; i--){
+			a = *(*flat + tmp_s +(size_t)i );
+			info("byte %02d %02hhx (%c)\n", i, a, isalpha(a)? a : ' ');
+		}
+		info("\n");info("size %ld\n", pkt_cnt);
+		#endif	
+
+	}
+	assert(pkt_cnt == pkt_size);
+	return pkt_size;
 }
 
 void moldudp64_set_ids(moldudp64_s* p,const uint8_t sid[10],const uint64_t seq){
@@ -153,7 +212,7 @@ void moldudp64_get_ids(moldudp64_s *p, uint16_t msg_cnt_offset, uint8_t *sid[10]
 	assert(seq);
 	// no overflow - should have sent an end of session, updated sid and 
 	// reset seq to 0 before we hit and overflow
-	assert(!__builtin_uaddl_overflow(p->seq, (uint64_t) msg_cnt_offset, &seq )); 
+	assert(!__builtin_uaddl_overflow(p->seq, (uint64_t) msg_cnt_offset, seq )); 
 	memcpy(*sid, p->sid, sizeof(uint8_t)*10);
 }
 void moldudp64_get_debug_id(const uint8_t sid[10], const uint64_t seq, uint8_t debug_id[18]){
