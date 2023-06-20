@@ -493,6 +493,7 @@ logic [63:0] tb_data;
 logic [7:0]  tb_keep;
 
 logic tb_finished;
+logic tb_itch_finished;
 
 function void end_tb(input logic end_v);
 	begin
@@ -507,7 +508,7 @@ endfunction
 task vpi_task;
 begin
 	integer i;
-	for(i=0; i < 15000 ; i++ ) begin
+	for(i=0; i < 15000000000 ; i++ ) begin
 		#10	
 		tb_ready = udp_axis_tready_o;
 		$tb(tb_ready, tb_valid, tb_data, tb_keep, tb_last, tb_finished);
@@ -818,7 +819,7 @@ end
 always @(posedge itch_msg_v_sent) begin
 	// asserts, match ?
 	$tb_itch(
-		tb_finished,
+		tb_itch_finished,
 		tb_itch_debug_id,
 		tb_itch_system_event_v,
 		tb_itch_stock_directory_v,
@@ -1002,7 +1003,7 @@ always @(posedge itch_msg_v_sent) begin
 		tb_itch_retail_price_improvement_indicator_interest_flag,
 		tb_itch_end_of_snapshot_sequence_number
 	);
-	end_tb(tb_finished);
+	`assert_stop(~tb_itch_finished);
 
 	if (~ tb_finished ) begin
 		// check we are comparing the correct message
