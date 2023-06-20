@@ -81,6 +81,7 @@ size_t moldudp64_flatten(
 
 	#ifdef DEBUG
 	size_t tmp_s = 0;
+	moldudp64_print(p);
 	#endif
 
 	info("offset size %ld\n", pkt_size);
@@ -165,8 +166,13 @@ size_t moldudp64_flatten(
 
 		#ifdef DEBUG
 		uint8_t a;
-		moldudp64_print(p);
-		info("flatten mold msg, raw data :\n");
+		uint8_t debug_id[18];
+		
+		moldudp64_get_debug_id(p->sid, p->seq, msg_cnt, &debug_id);
+	
+		info("flatten mold msg, raw data, debug_id 0x");
+		for(int i=17; i > -1; i--)info("%02hhx", debug_id[i]);
+		info("\n");
 		for(int i =(int)(p->msg[msg_cnt]->len)-1; i > -1; i--){
 			a = p->msg[msg_cnt]->data[i];
 			info("byte %02d %02hhx (%c)\n", i, a, isalpha(a)? a : ' ');
@@ -192,16 +198,22 @@ void moldudp64_set_ids(moldudp64_s* p,const uint8_t sid[10],const uint64_t seq){
 }
 
 void moldudp64_print(const moldudp64_s *p){
+	uint8_t debug_id[18];
 	printf("sid 0x");
 	for	( int i = sizeof(p->sid); i >= 0; i--){
 		printf("%02x",p->sid[i]);
 	}
 	printf("\nseq 0x%016lx\n", p->seq);
-	printf("cnt %d",p->cnt);
+	printf("cnt %d 0x%04x",p->cnt, p->cnt);
 	for( int c = 0; c < p->cnt; c++){
-		printf("\n	len %d\n	",p->msg[c]->len);
+		printf("\n	len %d	0x",p->msg[c]->len);
+		moldudp64_get_debug_id(p->sid, p->seq, c, &debug_id);
+		for(int i = 17; i > -1; i--)printf("%02hhx", debug_id[i]);
+		printf("\n    ");
 		for( int l=p->msg[c]->len; l>= 0; l--)
 			printf("%02x",p->msg[c]->data[l]);
+		printf("\n");
+		
 	}
 	printf("\n");
 }
@@ -215,9 +227,11 @@ void moldudp64_get_ids(moldudp64_s *p, uint16_t msg_cnt_offset, uint8_t *sid[10]
 	assert(!__builtin_uaddl_overflow(p->seq, (uint64_t) msg_cnt_offset, seq )); 
 	memcpy(*sid, p->sid, sizeof(uint8_t)*10);
 }
-void moldudp64_get_debug_id(const uint8_t sid[10], const uint64_t seq, uint8_t debug_id[18]){
+void moldudp64_get_debug_id(const uint8_t sid[10], const uint64_t seq, const uint16_t msg_cnt_offset, uint8_t debug_id[18]){
 	// debug id formal { sid , seq } ( little endian )
-	memcpy(debug_id, &seq, sizeof(uint64_t));
+	uint64_t seq_inc;
+	assert(!__builtin_uaddl_overflow( seq, (uint64_t) msg_cnt_offset, &seq_inc )); 
+	memcpy(debug_id, &seq_inc, sizeof(uint64_t));
 	memcpy(debug_id+sizeof(uint64_t), sid, sizeof(uint8_t)*10);
 }
 

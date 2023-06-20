@@ -5,11 +5,14 @@
  * 
  * This code is provided "as is" without any express or implied warranties. */ 
 
-#include "tv.h"
 #include <stdlib.h>
 #include <assert.h>
+
+#include "tv.h"
 #include "file.h"
 #include "axis.h"
+#include "tb_rand.h"
+
 tv_t * tv_alloc(const char *path){
 	tv_t *tv;
 	tv = (tv_t *) malloc( sizeof(tv_t));
@@ -23,6 +26,9 @@ tv_t * tv_alloc(const char *path){
 	assert(tv->fptr);
 	tv->flat = NULL;
 	tv->itch_fifo_s = tb_itch_fifo_alloc();
+
+	// init rand
+	tb_rand_init(RAND_SEED);
 	return tv; 
 }
 
@@ -58,7 +64,7 @@ void tv_create_packet(tv_t *t, size_t itch_n) {
 	
 		// create itch structure with debug id
 		uint8_t tmp_debug_id[18];
-		moldudp64_get_debug_id(t->mold_s->sid, t->mold_s->seq, tmp_debug_id);
+		moldudp64_get_debug_id(t->mold_s->sid, t->mold_s->seq,msg_cnt, tmp_debug_id);
 		#ifdef DEBUG
 		//printf("Mold msg %ld at mold index %d debug id 0x", msg_cnt, t->mold_s->cnt);
 		//for (int i=17; i > -1; i-- )printf("%02hhx", tmp_debug_id[i]);
@@ -98,7 +104,7 @@ uint64_t tv_axis_get_next_64b(
 		#ifdef DEBUG
 		printf("Axis message finished, creating new message\n");
 		#endif
-		tv_create_packet( t, 1 );
+		tv_create_packet( t, tb_rand_get_msg_cnt() );
 
 	}
 	*tlast = axis_msg_last(&t->flat_idx, t->flat_l );

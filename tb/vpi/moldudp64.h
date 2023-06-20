@@ -14,9 +14,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-// define a macro for the number of max messages to not have to dynamically
-// allocate memory, more expensive in memory, less in computing ( perf ) 
-#define MOLDUDP64_MSG_CNT_MAX 100
+#include "tb_config.h"
 
 typedef struct __attribute__((__packed__)){
 	uint16_t  len;
@@ -49,7 +47,7 @@ void moldudp64_print(const moldudp64_s *p);
 // get the session id and sequence number for a given message 
 void moldudp64_get_ids(moldudp64_s *p,uint16_t msg_cnt_offset,uint8_t *sid[10],uint64_t *seq); 
 
-void moldudp64_get_debug_id(const uint8_t sid[10], const uint64_t seq, uint8_t debug_id[18]);
+void moldudp64_get_debug_id(const uint8_t sid[10], const uint64_t seq, const uint16_t msg_cnt_offset, uint8_t debug_id[18]);
 
 #define malloc_(x) (x *) malloc(sizeof(x))
 typedef uint8_t u8;

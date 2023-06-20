@@ -8,3 +8,4 @@
 - Send end of session messages for mold when sequence number for testing the
     feature and when seq gets to close to the max range of a uint64\_t
 - Launch workstation on test, laptop reached nasdaq bin file pos 317881467 
+- Add timeout assertion on tb to detect when if itch decoder doesn't send out response 

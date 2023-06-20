@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <assert.h>
 #ifdef DEBUG
 #include <stdio.h>
 #endif

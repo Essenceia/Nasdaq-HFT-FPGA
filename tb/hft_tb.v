@@ -12,7 +12,7 @@
 /* Adding extra 10 cycles for debuging after failure detection */
 `define assert_stop( X ) \
 if (~( X )) begin \
-$display("assert failed : time %t , line %0d",$time, `__LINE__); \
+$display("ERROR : assert failed : time %t , line %0d",$time, `__LINE__); \
 #10\
 $stop; \
 end 
@@ -505,7 +505,7 @@ endfunction
 task vpi_task;
 begin
 	integer i;
-	for(i=0; i < 15000000000 ; i++ ) begin
+	for(i=0; i < 15000 ; i++ ) begin
 		#10	
 		tb_ready = udp_axis_tready_o;
 		$tb(tb_ready, tb_valid, tb_data, tb_keep, tb_last, tb_finished);
