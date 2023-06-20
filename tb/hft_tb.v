@@ -21,6 +21,8 @@ end
 	assert( X )
 `endif
 
+`define TB_LLOCK_CNT_START 20
+
 parameter AXI_DATA_W = 64;
 parameter AXI_KEEP_W = AXI_DATA_W/8;
 parameter LEN   = 8;
@@ -793,6 +795,25 @@ assign itch_retail_price_improvement_indicator_tracking_number = m_hft.itch_reta
 assign itch_retail_price_improvement_indicator_timestamp = m_hft.itch_retail_price_improvement_indicator_timestamp;
 assign itch_retail_price_improvement_indicator_stock = m_hft.itch_retail_price_improvement_indicator_stock;
 assign itch_retail_price_improvement_indicator_interest_flag = m_hft.itch_retail_price_improvement_indicator_interest_flag;
+
+/* Trigger an assert if a new itch message wasn't decoded within
+ * a set amount of cycles.
+ */
+task livelock_countdown ( input itch_msg_v_sent_i);
+	integer cnt = `TB_LLOCK_CNT_START;
+	begin
+		if ( itch_msg_v_sent_i ) begin
+			cnt = `TB_LLOCK_CNT_START;
+		end else begin
+			cnt = cnt - 1;
+		end
+		`assert_stop( cnt != 0 );
+	end
+endtask
+
+always @(posedge clk) begin
+	livelock_countdown(itch_msg_v_sent);
+end
 
 always @(posedge itch_msg_v_sent) begin
 	// asserts, match ?
