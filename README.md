@@ -1,9 +1,55 @@
-# Hight frequency trading hardware RTL
+# HFT FPGA RTL
 
 The objective of this project is to have a fast, reliable and well verified hight frequency
-trading low level compatible with nasdaq's itch/otch protocols.
+trading low level compatible with NADSAQ ITCH/OUCH protocols.
 
-This is an ongoing project.
+This project is currently under active development.
+
+## Test bench
+
+Our top level testbench is driven by a C library via the VPI interface.
+This library reads the binary file containing a day of nasdaq's itch packets, packages these
+itch messages into moldudp64 packets then breaks then down into an axis stream.
+We compare the outupt of the itch rtl decoder module out the other end.
+
+For more information and quick start instructions see [tb/README.md](tb/README.md)
+
+### Quickstart
+
+Requirement :
+- `iverilog` 
+
+1. Obtain a nasdaq binary file dump of totalview 5.0 itch messages.
+    Link to the official nasdaq server :[Nasdaq ITCH marketdata dumps](https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/) 
+    Archive should be named `<date>.NASDAQ_ITCH50.gz` 
+
+2. In `tb/hft_tb.v` specify the location of your nasdaq itch market data dump :
+    ```
+    t = $tb_init("<path_to_file");
+    ```
+
+3. In `tb/vpi/Makefile` specify path to iverilog :
+    ```
+    IVERILOG=<path_to_iverilog>
+    ```
+
+4. ( Default ) Build and run testbench with no waves :
+    ```
+    make run
+    ```
+
+4. ( Optional ) Dump waves during simulation :
+    ```
+    make run wave=1
+    ```
+    Open waves, by default we are using `gtkwave` :
+    ```
+    make wave
+    ```
+ 
+For more in depth usage and additional options see [tb/README.md](tb/README.md).
+
+## Roadmap
 
 Features currently under development :
 
@@ -21,74 +67,7 @@ Features currently under development :
 
 Areas grayed out are our planned but not yet in progress features.
 
-## Test bench
-
-Testing is done by driving the AXI stream interface with the expected output of the
-UDP packet decoder.
-This AXIS stream contains MoldUDP64 packets themself containing ITCH messages.
-The content for these ITCH messages are read from a file containing [Nasdaq ITCH marketdata dumps](https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/).
-All of this is performed via a Verilog Programming Interface ( VPI ) coded in C.
-
-
-To run :
-
-Specify the location of your nasdaq itch market data dump in `tb/hft_tb.v`.
-```
-$tb_init("<path_to_file>");
-```
-
-Normal test run command, no debug logs, no waves :
-```
-make run
-```
-
-( Optional ) Arguments :
-
-- `debug=1` Add debug console logs
-
-- `wave=1` Write waves to file
-
-- `interactive=1` Stop simulator when an system verilog assert fires,
-    used for interactive debugging
-
-``` 
-make run debug=1 wave=1
-```
-
-Open wave viewer, only available with option `wave=1` using `gtkwave` by default.
-```
-make wave
-```
-
-Run gdb on C testbench :
-```
-make gdb
-```
-
-Run valgrind on C testbench :
-```
-make valgrind
-```
-
-Clean :
-```
-make clean
-```
- 
-For additional information read the [README.md](tb/README.md) in the `tb` folder
-
-### Tools
-
-Since the nasdaq provided binary file is a dump of itch broadcast messages we 
-have long sequences of messages with low variety, such as on startup with a lot of 
-`stock event` messages and `stock directy` messages.
-
-In order to increase variety we use a small tool to create a new binary file with
-a subset of randomly selected messages.
-
-Tool can be found : https://github.com/Essenceia/Nasdaq_binaryfile_utils
 
 # License
 
-This code is licensed under CC BY-NC 4.0, to obtain a commercial license
-reach out to the author .
+This code is licensed under CC BY-NC 4.0, all rights belong to Julia Desmazes .
