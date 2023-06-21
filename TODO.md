@@ -1,11 +1,18 @@
 - Add UDP ethernet capability
 - Add formal 
-- Compare itch values with struct
 - Futur small use case to debug system behavior : filter out all packets exept MPID = OPTU
+    and attactch the print to my motivation letter 
 - Found memory leak in iverilog : look into leak source and eventually fix ?
-- itch ptr being null might not be caused by end of file, continue looking for cause of bug.
-- Enable seq and sid for debug, help identify messages `MOLD_MSG_IDS`, check if match in tb
 - Send end of session messages for mold when sequence number for testing the
     feature and when seq gets to close to the max range of a uint64\_t
-- Launch workstation on test, laptop reached nasdaq bin file pos 317881467 
-- Add timeout assertion on tb to detect when if itch decoder doesn't send out response 
+- Add predictable random number generator and print it's value along fpos for wave creation
+- Add ability to start dumping waves at a set time ( future debuging ) 
+- Add system verilog structure to contain itch wave values ( convert field to little endian for readability )
+- Better doc 
+- Run new nightly
+- Add tb feature to skip packets and compare expected skip start-end to mold missing packet detector
+    ( used in re-replay ) 
+- Axis master ?
+- Connect re-replay feature to udp 
+- Stop being cheap and go buy that fpga ... ( and the fiber switch ) :moneywithwings:
+ 
