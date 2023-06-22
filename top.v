@@ -301,9 +301,6 @@ moldudp64 #(
 );
 // itch
 tv_itch5 #( .LEN(LEN),
-`ifdef MOLD_MSG_IDS
-	.SID_W(SID_W), .SEQ_NUM_W(SEQ_NUM_W),
-`endif
 `ifdef DEBUG_ID
 	.DEBUG_ID_W(DEBUG_ID_W),
 `endif
