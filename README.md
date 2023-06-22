@@ -20,12 +20,14 @@ Requirement :
 - `iverilog` 
 
 1. Obtain a nasdaq binary file dump of totalview 5.0 itch messages.
-    Link to the official nasdaq server :[Nasdaq ITCH marketdata dumps](https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/) 
+    
+    Link to the official nasdaq server : [Nasdaq ITCH marketdata dumps](https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/) 
+    
     Archive should be named `<date>.NASDAQ_ITCH50.gz` 
 
 2. In `tb/hft_tb.v` specify the location of your nasdaq itch market data dump :
     ```
-    t = $tb_init("<path_to_file");
+    t = $tb_init("<path_to_file>");
     ```
 
 3. In `tb/vpi/Makefile` specify path to iverilog :
@@ -70,4 +72,4 @@ Areas grayed out are our planned but not yet in progress features.
 
 # License
 
-This code is licensed under CC BY-NC 4.0, all rights belong to Julia Desmazes .
+This code is licensed under CC BY-NC 4.0, all rights belong to Julia Desmazes.
