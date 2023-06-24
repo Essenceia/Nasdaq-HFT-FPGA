@@ -22,3 +22,6 @@
 !*.jpg
 !itch
 !moldudp64
+!tcl
+!*.tcl
+!*.xdc
