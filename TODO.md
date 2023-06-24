@@ -15,4 +15,4 @@
 - Axis master ?
 - Connect re-replay feature to udp 
 - Stop being cheap and go buy that fpga ... ( and the fiber switch ) :moneywithwings:
- 
+- Add vivado tcl scripts  

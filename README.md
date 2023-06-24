@@ -62,6 +62,7 @@ Features currently under development :
 - [X] MoldUDP64 missing message detection
 - [ ] Send MoldUDP64 missing message retransmission request
 - [ ] SoupBinTCP AXI stream receiver
+- [ ] OUCH 5.0 encoder
 - [ ] TCP Glimpse request
 - [ ] TCP Glimpse response
 
