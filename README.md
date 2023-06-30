@@ -3,7 +3,7 @@
 The objective of this project is to have a fast, reliable and well verified hight frequency
 trading low level compatible with NADSAQ ITCH/OUCH protocols.
 
-This project is currently under active development.
+This project is currently under active development, most recent work can be found on the submodules's `dev` branch.
 
 ## Test bench
 
