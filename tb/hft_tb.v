@@ -25,6 +25,7 @@ end
 
 parameter AXI_DATA_W = 64;
 parameter AXI_KEEP_W = AXI_DATA_W/8;
+parameter KEEP_LW    = $clog2(AXI_DATA_W/8+1);
 parameter LEN   = 8;
 parameter ML_W  = 2*LEN;
 parameter SID_W = 10*LEN;// session id
@@ -50,7 +51,7 @@ logic                  udp_axis_tready_o;
 
 logic                  mold_msg_v_o;
 logic                  mold_msg_start_o;
-logic [AXI_KEEP_W-1:0] mold_msg_mask_o;
+logic [KEEP_LW-1:0]    mold_msg_len_o;
 logic [AXI_DATA_W-1:0] mold_msg_data_o;
 
 `ifdef MOLD_MSG_IDS
@@ -798,7 +799,7 @@ assign mold_debug_id_o  = m_hft.mold_itch_msg_debug_id;
 
 assign mold_msg_v_o     = m_hft.mold_itch_msg_v;    
 assign mold_msg_start_o = m_hft.mold_itch_msg_start;
-assign mold_msg_mask_o  = m_hft.mold_itch_msg_mask; 
+assign mold_msg_len_o   = m_hft.mold_itch_msg_len; 
 assign mold_msg_data_o  = m_hft.mold_itch_msg_data; 
 
 // itch

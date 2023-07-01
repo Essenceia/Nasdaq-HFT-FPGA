@@ -12,9 +12,10 @@ puts "device $device"
 
 set rtl_path "../"
 set xdc_path ""
-set log_path build
+set build_path "../build"
 set project_name hft_fpga
-set path [pwd]/${device}_${project_name}
+set path ${build_path}/${device}_${project_name}
+set log_path $path
 set design hft
 create_project $project_name $path -part $device -force 
 set_property design_mode RTL [current_fileset -srcset]
