@@ -7,7 +7,7 @@ FANCY_FPGA=xcku025-ffva1156-2-i
 
 BUILD=build
 
-files: ${BUILD}
+files:
 	mkdir -p ${BUILD} 
 
 # setup vivado if it hasn't been done yet

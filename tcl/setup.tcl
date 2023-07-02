@@ -31,10 +31,11 @@ read_verilog -sv $rtl_path/moldudp64/endian_flip.v
 read_verilog -sv $rtl_path/moldudp64/header.v
 read_verilog -sv $rtl_path/moldudp64/len_to_mask.v
 read_verilog -sv $rtl_path/moldudp64/miss_msg_det.v
+read_verilog -sv $rtl_path/moldudp64/dispatch.v
 read_verilog -sv $rtl_path/moldudp64/moldudp64.v
 
 #itch
-read_verilog -sv $rtl_path/itch/tv_itch5.v
+read_verilog -sv $rtl_path/itch/tv_itch5_dec.v
 
 #add xdc constraints
 read_xdc ${device}_ooc.xdc
@@ -57,9 +58,11 @@ route_design > ${log_path}/${project_name}_route.rds
 # report utilization
 report_utilization -file ${log_path}/${project_name}_utilization.rpt
 
-# timming report
+# timming reports
+# short summary report
 report_timing_summary -file ${log_path}/${project_name}_timing_summary.rpt
-
+# mid sized report with list of 50 worst paths to work on
+report_timing -nworst 50 -path_type full -input_pins -file ${log_path}/${project_name}_timing_50_worst.rpt
 
 close_project
 
