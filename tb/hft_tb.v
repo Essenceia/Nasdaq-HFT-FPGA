@@ -548,7 +548,7 @@ begin
 	#10
 	tb_ready = 1'b1;
  	nreset = 1'b1;
- 	t = $tb_init("/home/pitchu/rtl/hft/tb/12302019.NASDAQ_ITCH50");
+	t = $tb_init("/home/pitchu/rtl/hft/tb/12302019.NASDAQ_ITCH50");
 	//t = $tb_init("/home/pitchu/rtl/hft/tb/test.bin");
 	udp_axis_tuser_i = 1'b0;
 	udp_axis_tvalid_i = 1'b0;	
