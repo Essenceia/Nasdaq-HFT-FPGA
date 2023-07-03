@@ -7,3 +7,6 @@
 [submodule "verilog-ethernet"]
 	path = verilog-ethernet
 	url = https://github.com/alexforencich/verilog-ethernet
+[submodule "utils"]
+	path = utils
+	url = git@github.com:Essenceia/rtl_utils.git

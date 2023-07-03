@@ -25,3 +25,4 @@
 !tcl
 !*.tcl
 !*.xdc
+!utils
