@@ -5,6 +5,48 @@ trading low level compatible with NADSAQ ITCH/OUCH protocols.
 
 This project is currently under active development, most recent work can be found on the submodules's `dev` branch.
 
+```
+                                                                +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+                              +----------+                      |                                                                                     FPGA                                                                                     |
+                              |  Switch  |                      |                                                                                                                                                     +----------------------+ |
++----------------------+      |          |                 +----+---+       +-----------------+            +-------------+                 +----------------------+                +----------------------+           |                      | |
+|                      |      |          |   UDP multicast |        |       |                 | UDP packet |             |  Mold messages  |                      |  ITCH packets  |                      |           |  Trading algorithm   | |
+|  NASDAQ ITCH server  +------+-----+----+---------------->|  Eth0  +------>|  UDP (rx only)  +----------->|  MoldUDP64  +---------------->|  Totalview ITCH 5.0  +--------------->|  ITCH packet filter  +---------> |                      | |
+|                      |      |     |    |                 |        |       |                 |            |             |                 |                      |                |                      |           |                      | |
++----------------------+      |     |    |                 +----+---+       +-----------------+            +-------+-----+                 +----------------------+                +----------------------+           |                      | |
+                              |     |    |                      |                                                  |                                                                                                  |                      | |
+                              |     |    |                      |                                                  |                                                                                                  |                      | |
+                              |     |    |                      |                                                  |                                                                                                  |                      | |
+                              |     |    |                      |                                                  |                                                                                                  |                      | |
+                              |     |    |                      |                                                  |                                                                                                  |                      | |
+                              |     |    |                      |                                                  |                                                                                                  |                      | |
+                              |     |    |                      |                                                  |                                                                                                  |                      | |
+                              |     |    |                      |                                                  |                                                                                                  |                      | |
++----------------------+      |     |    |                      |                                                  |                                                                                                  |                      | |
+|                      +------+-----+    |                 +----+---+       +-----------------+Mold missing message|                                                                                                  |                      | |
+|    NASDAQ ITCH       |      |          |        UDP      |        |       |                 |    replay request  |                                                                                                  |                      | |
+|  Re-request server   |<-----+----------+-----------------+  Eth1  |<------+  UDP (tx only)  |<-------------------+                                                                                                  |                      | |
+|                      |      |          |                 |        |       |                 |                                                                                                                       |                      | |
++----------------------+      |          |                 +----+---+       +-----------------+                                                                                                                       |                      | |
+                              +----------+                      |                                                                                                                                                     |                      | |
+                                                                |                                                                                                                                                     |                      | |
+                                                                |                                                                                                                                                     |                      | |
+                                                                |                                                                                                                                                     |                      | |
+                                                                |                                                                                                                                                     |                      | |
+                                                                |                                                                                                                                                     |                      | |
+                                                                |                                                                                                                                                     |                      | |
+                                                                |                                                                                                                                                     |                      | |
+                                                                |                                                                                                                                                     |                      | |
+ +----------------------+                                  +----+---+            +-------+              +------------------+                    +-------------+                                                       |                      | |
+ |                      |                          TCP     |        |            |       |              |                  |                    |             |                                                       |                      | |
+ |  NASDAQ OUCH server  |<-------------------------------->|  Eth2  |<---------->|  TCP  |<------------>|  SoupBinTCP 3.0  |<------------------>|  OUCH 5.0   |<----------------------------------------------------->|                      | |
+ |                      |                                  |        |            |       |              |                  |                    |             |                                                       |                      | |
+ +----------------------+                                  +----+---+            +-------+              +------------------+                    +-------------+                                                       |                      | |
+                                                                |                                                                                                                                                     +----------------------+ |
+                                                                |                                                                                                                                                                              |
+                                                                +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+```
+
 ## Test bench
 
 Our top level testbench is driven by a C library via the VPI interface.
@@ -61,14 +103,13 @@ Features currently under development :
 - [X] UDP Multicast receiver
 - [X] MoldUDP64 missing message detection
 - [ ] Send MoldUDP64 missing message retransmission request
+- [ ] low latency UDP
+- [ ] low latency TCP
 - [ ] SoupBinTCP AXI stream receiver
 - [ ] OUCH 5.0 encoder
 - [ ] TCP Glimpse request
 - [ ] TCP Glimpse response
 
-![Work in progress, img source :https://www.asxonline.com/content/dam/asxonline/public/documents/asx-trade-refresh-manuals/asx-trade-itch-message-specification.pdf !](/doc/wip.jpg)
-
-Areas grayed out are our planned but not yet in progress features.
 
 
 # License
