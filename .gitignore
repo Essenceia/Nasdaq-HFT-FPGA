@@ -6,6 +6,7 @@
 !itch
 !moldudp64
 !verilog-ethernet
+!ethernet
 !*.md
 !*.v
 !.gitignore
