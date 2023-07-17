@@ -534,7 +534,7 @@ moldudp64 #(
 	.mold_msg_ov_data_o(mold_itch_msg_ov_data)
 );
 // itch
-tv_itch5_dec #( .LEN(LEN),
+tv_itch5 #( .LEN(LEN),
 `ifdef DEBUG_ID
 	.DEBUG_ID_W(DEBUG_ID_W),
 `endif
