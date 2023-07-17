@@ -9,10 +9,8 @@
 - Add ability to start dumping waves at a set time ( future debuging ) 
 - Add system verilog structure to contain itch wave values ( convert field to little endian for readability )
 - Better doc 
-- Run new nightly
 - Add tb feature to skip packets and compare expected skip start-end to mold missing packet detector
     ( used in re-replay ) 
-- Axis master ?
 - Connect re-replay feature to udp 
 - Stop being cheap and go buy that fpga ... ( and the fiber switch ) :moneywithwings:
 - Implement O+ ?

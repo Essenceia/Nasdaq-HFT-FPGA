@@ -10,3 +10,7 @@
 [submodule "utils"]
 	path = utils
 	url = git@github.com:Essenceia/rtl_utils.git
+[submodule "ethernet"]
+	path = ethernet
+	url = https://github.com/essenceia/low-latency-ethernet
+
