@@ -20,6 +20,7 @@
 !inc/gen
 !Makefile
 !*.jpg
+!*.svg
 !itch
 !moldudp64
 !tcl
