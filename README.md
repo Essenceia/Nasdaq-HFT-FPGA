@@ -61,9 +61,13 @@ Features currently under development :
 - [X] UDP Multicast receiver
 - [X] MoldUDP64 missing message detection
 - [ ] Send MoldUDP64 missing message retransmission request
-- [ ] low latency UDP
-- [ ] low latency TCP
-- [ ] SoupBinTCP AXI stream receiver
+- [x] Ethernet Physical layer for 10GBASE-R 
+- [x] Ethernet Physical layer for 40GBASE-R 
+- [ ] Ethernet MAC layer 
+- [ ] Ethernet IP layer ( IPv4 )
+- [ ] Ethernet UDP layer
+- [ ] Ethernet TCP layer
+- [ ] SoupBinTCP
 - [ ] OUCH 5.0 encoder
 - [ ] TCP Glimpse request
 - [ ] TCP Glimpse response
