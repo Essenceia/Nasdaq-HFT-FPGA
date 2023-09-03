@@ -63,7 +63,7 @@ Features currently under development :
 - [ ] Send MoldUDP64 missing message retransmission request
 - [x] Ethernet Physical layer for 10GBASE-R 
 - [x] Ethernet Physical layer for 40GBASE-R 
-- [ ] Ethernet MAC layer 
+- [x] Ethernet MAC layer 
 - [ ] Ethernet IP layer ( IPv4 )
 - [ ] Ethernet UDP layer
 - [ ] Ethernet TCP layer
