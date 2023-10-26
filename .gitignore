@@ -27,3 +27,7 @@
 !*.tcl
 !*.xdc
 !utils
+!tools
+!tools/**
+!lib
+!lib/**

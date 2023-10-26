@@ -14,3 +14,15 @@
 	path = ethernet
 	url = https://github.com/essenceia/low-latency-ethernet
 
+[submodule "tools/nasdaq_bin_file_tool"]
+	path = tools/nasdaq_bin_file_tool
+	url = git@github.com:Essenceia/Nasdaq_binaryfile_utils.git
+[submodule "lib/ouch"]
+	path = lib/ouch
+	url = git@github.com:Essenceia/OUCH_5.0_C_lib.git
+[submodule "lib/itch"]
+	path = lib/itch
+	url = git@github.com:Essenceia/TotalView_ITCH_5.0_C_lib.git
+[submodule "lib/eth"]
+	path = lib/eth
+	url = git@github.com:Essenceia/ethernet_packet_C_lib.git
