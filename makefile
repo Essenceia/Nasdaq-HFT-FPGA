@@ -23,14 +23,17 @@ WAVE_FILE=wave.vcd
 WAVE_CONF=wave.conf
 VIEW=gtkwave
 
+ITCH_DIR=itch
+INC = -I$(ITCH_DIR)
+
 all: top run
 
 # Test bench 
 top: top.v moldudp64 itch
-	iverilog $(FLAGS) -s hft $(DEFINES) -o $(BUILD)/hft top.v -y moldudp64/ -y itch/
+	iverilog $(FLAGS) -s hft $(DEFINES) -o $(BUILD)/hft $(INC) top.v -y moldudp64/ -y itch/
 
 test: $(TB_DIR)/hft_tb.v top
-	iverilog $(FLAGS) -s hft_tb $(DEFINES) -o $(BUILD)/hft_tb top.v $(TB_DIR)/hft_tb.v -y moldudp64/ -y itch/
+	iverilog $(FLAGS) -s hft_tb $(DEFINES) -o $(BUILD)/hft_tb $(INC) top.v $(TB_DIR)/hft_tb.v -y moldudp64/ -y itch/
 
 run: test vpi
 	vvp -M $(VPI_DIR) -mtb $(BUILD)/hft_tb
