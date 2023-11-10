@@ -23,6 +23,12 @@ tv_t * tv_alloc(const char *path){
 	tv->flat_l   = 0; 
 	tv->flat_idx = 0;
 	tv->fptr = fopen( path, "rb");
+	if (tv->fptr==NULL){
+		/* opening of NASDAQ log file has failed */
+		fprintf(stderr,
+			"ERROR: failed to open exchange log file at path %s\n", 
+			path);	
+	}
 	assert(tv->fptr);
 	tv->flat = NULL;
 	tv->itch_fifo_s = tb_itch_fifo_alloc();
