@@ -308,8 +308,7 @@ endfunction
 
 task vpi_task;
 begin
-	integer i;
-	for(i=0; i < 15000000000 ; i++ ) begin
+	while(1) begin
 		#10	
 		tb_ready = udp_axis_tready_o;
 		$tb(tb_ready, tb_valid, tb_data, tb_keep, tb_last, tb_finished);
