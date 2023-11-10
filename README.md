@@ -1,7 +1,7 @@
 # HFT FPGA RTL
 
 The objective of this project is to have a fast, reliable and well verified hight frequency
-trading low level compatible with NADSAQ ITCH/OUCH protocols.
+trading interface compatible with NADSAQ ITCH/OUCH protocols.
 
 ![Project architecture!](/doc/arch.svg)
 
@@ -64,9 +64,9 @@ Features currently under development :
 - [x] Ethernet Physical layer for 10GBASE-R 
 - [x] Ethernet Physical layer for 40GBASE-R 
 - [x] Ethernet MAC layer 
-- [ ] Ethernet IP layer ( IPv4 )
-- [ ] Ethernet UDP layer
-- [ ] Ethernet TCP layer
+- [x] Ethernet IP layer ( IPv4 )
+- [x] Ethernet UDP layer
+- [x] Ethernet TCP layer
 - [ ] SoupBinTCP
 - [ ] OUCH 5.0 encoder
 - [ ] TCP Glimpse request
