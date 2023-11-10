@@ -19,8 +19,6 @@ FLAGS=-Wall -g2012 -gassertions -gstrict-expr-width
 DEFINES=-DMISS_DET -DHEARTBEAT -DMOLD_MSG_IDS -DDEBUG_ID $(if $(debug), -DDEBUG_ID) $(if $(wave), -DWAVE) $(if $(interactive), -DINTERACTIVE )
 IMPLEM_DEFINES=$(if $(wave), -DWAVE) $(if $(interactive), -DINTERACTIVE )
 DEBUG_FLAG=$(if $(debug), debug=1)
-WAVE_FILE=wave.vcd
-WAVE_CONF=wave.conf
 VIEW=gtkwave
 
 ITCH_DIR=itch
@@ -36,6 +34,7 @@ test: $(TB_DIR)/hft_tb.v top
 	iverilog $(FLAGS) -s hft_tb $(DEFINES) -o $(BUILD)/hft_tb $(INC) top.v $(TB_DIR)/hft_tb.v -y moldudp64/ -y itch/
 
 run: test vpi
+	mkdir -p wave
 	vvp -M $(VPI_DIR) -mtb $(BUILD)/hft_tb
 
 # Implementation specific test bench 
@@ -52,9 +51,6 @@ implem_tb_run: implem_tb vpi
 
 vpi:
 	cd $(VPI_DIR) && $(MAKE) tb.vpi $(DEBUG_FLAG) 
-
-wave :
-	$(VIEW) $(BUILD)/$(WAVE_FILE) $(CONF)/$(WAVE_CONF)
 
 valgrind: test vpi
 	valgrind vvp -M $(VPI_DIR) -mtb $(BUILD)/hft_tb
