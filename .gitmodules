@@ -26,3 +26,6 @@
 [submodule "lib/eth"]
 	path = lib/eth
 	url = git@github.com:Essenceia/ethernet_packet_C_lib.git
+[submodule "lib/fake_server"]
+	path = lib/fake_server
+	url = git@github.com:Essenceia/NASDAQ_server_C_lib.git
