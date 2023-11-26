@@ -14,3 +14,7 @@
 - Connect re-replay feature to udp 
 - Stop being cheap and go buy that fpga ... ( and the fiber switch ) :moneywithwings:
 - Implement O+ ?
+
+- reset : SR port on fpga resgisters is active **high** ... need to move to using 
+    reset instead on nreset to prevent infering of an additional not gate ... via a LUT
+    -> git grep nreset 
