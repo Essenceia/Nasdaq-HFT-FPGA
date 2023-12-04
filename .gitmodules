@@ -29,6 +29,6 @@
 [submodule "lib/fake_server"]
 	path = lib/fake_server
 	url = git@github.com:Essenceia/NASDAQ_server_C_lib.git
-[submodule "lib/fifo"]
+[submodule "lib/utils"]
 	path = lib/fifo
-	url = git@github.com:Essenceia/FIFO_C_lib.git
+	url = git@github.com:Essenceia/utils_C_lib.git
